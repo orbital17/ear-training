@@ -26,8 +26,8 @@ randomFromList list =
     Random.map (\index -> get index list) gen
 
 
-randomNote : Mode -> Generator (Maybe Note)
-randomNote mode = randomFromList <| modeNotes mode
+randomNote : Mode -> Generator Note
+randomNote mode = Random.map (Maybe.withDefault 0) <| randomFromList <| modeNotes mode
 
 transpose : Int -> Chord -> Chord
 transpose n = List.map ((+) n)
@@ -44,9 +44,9 @@ intervals scale =
     |> List.filter (\(root, top) -> root < top && (top - root) <= 12)
     |> List.map (\(root, top) -> [root, top])
 
-randomInterval : Mode -> Generator (Maybe Chord)
-randomInterval = randomFromList << intervals << modeNotes
+randomInterval : Mode -> Generator Chord
+randomInterval = Random.map (Maybe.withDefault [0, 0]) << randomFromList << intervals << modeNotes
 
 
-getRandom : Generator (Maybe Chord)
-getRandom = Random.map (Maybe.map (transpose 48)) <| randomInterval Major
+getRandom : Generator Chord
+getRandom = randomInterval Major
