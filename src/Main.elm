@@ -5,7 +5,8 @@ import Html exposing (li, div, Html, text, button)
 --import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 
-import Chords exposing (Chord)
+import Chords exposing (Chord, randomNote)
+import Random
 
 main : Program Never Model Msg
 main =
@@ -29,15 +30,24 @@ port stop: () -> Cmd msg
 
 -- UPDATE
 
-type Msg = Play Chord | Stop
+playMaybeNote : Maybe Chords.Note -> Msg
+playMaybeNote maybe =
+    case maybe of
+        Just n -> Play [n]
+        _ -> NoOp
+
+type Msg = Play Chord | Stop | RandomNote | NoOp
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
+        NoOp -> model ! []
         Play chord ->
             model ! [ playChord chord ]
         Stop ->
             ( model, stop () )
+        RandomNote ->
+            ( model, Random.generate playMaybeNote <| randomNote Chords.Major )
 
 -- VIEW
 
@@ -45,6 +55,7 @@ view : Model -> Html Msg
 view model =
   div []
     [ text "Hello world"
-    , button [ onClick (Play [60, 64])] [text "play"]
+    , button [ onClick (Play [60, 72])] [text "tonic"]
     , button [ onClick (Stop)] [text "stop"]
+    , button [ onClick (RandomNote)] [text "random"]
     ]
