@@ -12,7 +12,7 @@ modeNotes : Mode -> List Note
 modeNotes mode =
     case mode of
         Major ->
-            List.map ((+) 60) [0, 2, 4, 5, 7, 9, 11]
+            [0, 2, 4, 5, 7, 9, 11]
         Minor ->
             [0, 2, 3, 5, 7, 8, 10]
 
@@ -29,3 +29,24 @@ randomFromList list =
 randomNote : Mode -> Generator (Maybe Note)
 randomNote mode = randomFromList <| modeNotes mode
 
+transpose : Int -> Chord -> Chord
+transpose n = List.map ((+) n)
+
+
+intervals : List Note -> List Chord
+intervals scale =
+    List.concatMap
+        (\root -> List.map
+            (\top -> (root, top))
+            (scale ++ List.map ((+) 12) scale)
+        )
+        scale
+    |> List.filter (\(root, top) -> root < top && (top - root) <= 12)
+    |> List.map (\(root, top) -> [root, top])
+
+randomInterval : Mode -> Generator (Maybe Chord)
+randomInterval = randomFromList << intervals << modeNotes
+
+
+getRandom : Generator (Maybe Chord)
+getRandom = Random.map (Maybe.map (transpose 48)) <| randomInterval Major
