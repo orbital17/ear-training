@@ -1,6 +1,7 @@
 module Chords exposing (..)
 
 import Random exposing (Generator)
+import Array exposing (Array)
 
 
 type alias Note =
@@ -24,6 +25,14 @@ modeNotes mode =
 
         Minor ->
             [ 0, 2, 3, 5, 7, 8, 10 ]
+
+
+syllable : Note -> String
+syllable n =
+    [ "do", "re♭", "re", "mi♭", "mi", "fa", "sol♭", "sol", "la♭", "la", "si♭", "si" ]
+        |> Array.fromList
+        |> Array.get (n % 12)
+        |> Maybe.withDefault "_"
 
 
 randomFromList : List a -> Generator (Maybe a)

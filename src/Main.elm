@@ -4,9 +4,10 @@ import Html exposing (li, div, Html, text, button, p, span)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Char
+import Array
 import Random
 import Keyboard
-import Chords exposing (Chord, getRandom)
+import Chords exposing (Chord, getRandom, Note)
 
 
 main : Program Never Model Msg
@@ -26,6 +27,11 @@ main =
 type alias Model =
     { root : Int
     , chord : Chord
+    , total : Int
+    , correct : Int
+    , error : Bool
+    , guessed : Int
+    , mode : Chords.Mode
     }
 
 
@@ -33,6 +39,11 @@ initModel : Model
 initModel =
     { root = 48
     , chord = []
+    , total = 0
+    , correct = 0
+    , error = False
+    , guessed = 0
+    , mode = Chords.Major
     }
 
 
@@ -56,6 +67,7 @@ type Msg
     | Play Chord
     | NewExercise
     | Exercise Chord
+    | MakeGuess Note
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,7 +80,37 @@ update msg model =
             model ! [ play model.root chord ]
 
         NewExercise ->
-            ( model, Random.generate Exercise getRandom )
+            if model.guessed /= List.length model.chord then
+                (model ! [])
+            else
+                ( { model
+                    | guessed = 0
+                    , error = False
+                    , total = model.total + 1
+                    , correct =
+                        if model.error then
+                            model.correct
+                        else
+                            model.correct + 1
+                  }
+                , Random.generate Exercise getRandom
+                )
+
+        MakeGuess n ->
+            let
+                isRight =
+                    Array.get model.guessed (Array.fromList model.chord)
+                        |> Maybe.map (\real -> (real % 12) == n)
+            in
+                case isRight of
+                    Just True ->
+                        { model | guessed = model.guessed + 1 } ! []
+
+                    Just False ->
+                        { model | error = True } ! []
+
+                    Nothing ->
+                        model ! []
 
         Exercise c ->
             ( { model | chord = c }, play model.root c )
@@ -99,12 +141,31 @@ buttons m =
         ]
 
 
+noteButtons : Model -> List (Html Msg)
+noteButtons m =
+    Chords.modeNotes m.mode
+        |> List.map (\note -> button [ class "button", onClick (MakeGuess note) ] [ text (Chords.syllable note) ])
+
+
+answerLine : Model -> String
+answerLine m =
+    List.take m.guessed m.chord
+        |> List.map Chords.syllable
+        |> String.join "  "
+        |> flip (++)
+            (if m.guessed == List.length m.chord then
+                ""
+             else
+                "  ?"
+            )
+
+
 quiz : Model -> List (Html Msg)
 quiz m =
-    [ span [] [ text "Notes:" ]
-    , span [] [ text "fa" ]
-    , span [] [ text "?" ]
-    , span [] [ text "?" ]
+    [ div [] [ text (toString m.correct ++ " of " ++ toString m.total ++ " correct") ]
+    , div [] <| noteButtons m
+    , span [ class "is-medium label" ] [ text "Answer:" ]
+    , span [ class "is-large box" ] [ text <| answerLine m ]
     ]
 
 
@@ -132,7 +193,12 @@ keyboardMap model key =
             Play [ 0, 12 ]
 
         _ ->
-            NoOp
+            String.fromChar key
+                |> String.toInt
+                |> Result.toMaybe
+                |> Maybe.andThen (\n -> Array.get (n - 1) <| Array.fromList (Chords.modeNotes model.mode))
+                |> Maybe.map MakeGuess
+                |> Maybe.withDefault NoOp
 
 
 subscriptions : Model -> Sub Msg
