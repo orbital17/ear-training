@@ -7,6 +7,7 @@
   <script type="text/javascript" src="/node_modules/soundfont-player/dist/soundfont-player.js"></script>
   <script type="text/javascript" src="dist.js"></script>
   <script type="text/javascript" src="src/main.js"></script>
+  <link rel="stylesheet" href="/node_modules/bulma/css/bulma.css">
   <link rel="stylesheet" href="assets/style.css">
 </head>
 
@@ -15,9 +16,9 @@
 
 <script type="text/javascript">
 
-	let app = Elm.Main.fullscreen();
-	app.ports.playChord.subscribe(playChord);
-	app.ports.stop.subscribe(stop);
+  let app = Elm.Main.fullscreen();
+  app.ports.playChord.subscribe(playChord);
+  app.ports.stop.subscribe(stop);
 
 </script>
 

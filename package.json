@@ -1,6 +1,7 @@
 {
   "name": "elmapp",
   "dependencies": {
+    "bulma": "^0.4.1",
     "soundfont-player": "^0.10.5"
   }
 }
