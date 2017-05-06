@@ -32,7 +32,13 @@ type alias Model =
     , error : Bool
     , guessed : Int
     , mode : Chords.Mode
+    , page : Page
     }
+
+
+type Page
+    = MainPage
+    | ExercisePage
 
 
 initModel : Model
@@ -44,6 +50,7 @@ initModel =
     , error = False
     , guessed = 0
     , mode = Chords.Major
+    , page = MainPage
     }
 
 
@@ -68,6 +75,21 @@ type Msg
     | NewExercise
     | Exercise Chord
     | MakeGuess Note
+    | StartExercises
+
+
+countExercise : Model -> Model
+countExercise model =
+    { model
+        | guessed = 0
+        , error = False
+        , total = model.total + 1
+        , correct =
+            if model.error then
+                model.correct
+            else
+                model.correct + 1
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -83,16 +105,7 @@ update msg model =
             if model.guessed /= List.length model.chord then
                 (model ! [])
             else
-                ( { model
-                    | guessed = 0
-                    , error = False
-                    , total = model.total + 1
-                    , correct =
-                        if model.error then
-                            model.correct
-                        else
-                            model.correct + 1
-                  }
+                ( countExercise model
                 , Random.generate Exercise getRandom
                 )
 
@@ -114,6 +127,9 @@ update msg model =
 
         Exercise c ->
             ( { model | chord = c }, play model.root c )
+
+        StartExercises ->
+            ( { model | page = ExercisePage }, Random.generate Exercise getRandom )
 
 
 
@@ -164,20 +180,27 @@ quiz : Model -> List (Html Msg)
 quiz m =
     [ div [] [ text (toString m.correct ++ " of " ++ toString m.total ++ " correct") ]
     , div [] <| noteButtons m
-    , span [ class "is-medium label" ] [ text "Answer:" ]
     , span [ class "is-large box" ] [ text <| answerLine m ]
     ]
 
 
+content : Model -> Html Msg
+content m =
+    case m.page of
+        ExercisePage ->
+            div [ class "section columns" ]
+                [ div [ class "column is-5 is-offset-3" ] (quiz m)
+                , div [ class "column" ] (buttons m)
+                ]
+
+        MainPage ->
+            div [ class "has-text-centered" ]
+                [ button [ class "button is-primary is-large", (onClick StartExercises) ] [ text "Start" ] ]
+
+
 view : Model -> Html Msg
 view model =
-    div [ class "container" ]
-        [ nav
-        , div [ class "section columns" ]
-            [ div [ class "column is-5 is-offset-3" ] (quiz model)
-            , div [ class "column" ] (buttons model)
-            ]
-        ]
+    div [ class "container" ] [ nav, (content model) ]
 
 
 keyboardMap : Model -> Char -> Msg
