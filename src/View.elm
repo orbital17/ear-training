@@ -33,8 +33,9 @@ rightPanelButtons m =
         b =
             rightPanelButton
     in
-        [ b (Play [ 0, 12 ]) "Hear tonic [c]" False
-        , b (Play m.chord) "Hear again [a]" False
+        [ b (Play (Chords.getCadence m.mode)) "Hear cadence" False
+        , b (PlayOne [ 0, 12 ]) "Hear tonic [c]" False
+        , b (PlayOne m.chord) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
         ]
 

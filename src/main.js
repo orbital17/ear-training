@@ -7,15 +7,14 @@ Soundfont.instrument(ac, '/assets/acoustic_grand_piano-mp3.js').then(function (i
   instrument = i;
 })
 
-const playChord = function(arr) {
-  if (!instrument) return;
-  instrument.stop();
-  instrument.schedule(ac.currentTime, arr.map((v) => ({ time: 0, note: v })));
+const chordToNotes = function(chord, time) {
+  return chord.map((note) => ({time, note}));
 }
 
-const stop = function() {
+const playChords = function([chords, interval]) {
   if (!instrument) return;
+  const join = (arr) => arr.reduce((acc, current) => acc.concat(current), []);
+  const notes = join(chords.map((c, i) => chordToNotes(c, interval * i)));
   instrument.stop();
+  instrument.schedule(ac.currentTime, notes);
 }
-
-

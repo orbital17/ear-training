@@ -1,7 +1,7 @@
 module Chords exposing (..)
 
 import Random exposing (Generator)
-import Array exposing (Array)
+import Utils
 
 
 type alias Note =
@@ -30,9 +30,39 @@ modeNotes mode =
 syllable : Note -> String
 syllable n =
     [ "do", "re♭", "re", "mi♭", "mi", "fa", "sol♭", "sol", "la♭", "la", "si♭", "si" ]
-        |> Array.fromList
-        |> Array.get (n % 12)
+        |> Utils.get (n % 12)
         |> Maybe.withDefault "_"
+
+
+getNote : Mode -> Int -> Note
+getNote mode degree =
+    let
+        d =
+            degree - 1
+
+        nOctaves =
+            d // 7
+
+        modDegree =
+            d % 7
+
+        note =
+            modeNotes mode
+                |> Utils.get modDegree
+                |> Maybe.withDefault -100
+    in
+        note + (12 * nOctaves)
+
+
+getChord : Mode -> Int -> Chord
+getChord mode degree =
+    List.map (\i -> getNote mode (degree + i * 2))
+        (List.range 0 2)
+
+
+getCadence : Mode -> List Chord
+getCadence mode =
+    List.map (getChord mode) [ 1, 4, 5, 1 ]
 
 
 randomFromList : List a -> Generator (Maybe a)
@@ -40,16 +70,13 @@ randomFromList list =
     let
         gen =
             Random.int 0 (List.length list - 1)
-
-        get i l =
-            Array.get i (Array.fromList l)
     in
-        Random.map (\index -> get index list) gen
+        Random.map (\index -> Utils.get index list) gen
 
 
 randomNote : Mode -> Generator Note
 randomNote mode =
-    Random.map (Maybe.withDefault 0) (randomFromList (modeNotes mode))
+    Random.map (Maybe.withDefault -100) (randomFromList (modeNotes mode))
 
 
 transpose : Int -> Chord -> Chord

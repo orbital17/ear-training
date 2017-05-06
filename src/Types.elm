@@ -6,7 +6,8 @@ import Set exposing (Set)
 
 type Msg
     = NoOp
-    | Play Chord
+    | PlayOne Chord
+    | Play (List Chord)
     | NewExercise
     | Exercise Chord
     | MakeGuess Note

@@ -1,6 +1,5 @@
 port module Main exposing (main)
 
-import Array
 import Char
 import Html
 import Keyboard
@@ -9,6 +8,7 @@ import Set exposing (Set)
 import Chords exposing (Chord, getRandom, Note)
 import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel)
 import View exposing (view)
+import Utils
 
 
 main : Program Never Model Msg
@@ -22,15 +22,12 @@ main =
         }
 
 
-port playChord : Chord -> Cmd msg
+port playChordsPort : ( List Chord, Float ) -> Cmd msg
 
 
-port stop : () -> Cmd msg
-
-
-play : Int -> Chord -> Cmd msg
-play root c =
-    Chords.transpose root c |> playChord
+play : Int -> Float -> List Chord -> Cmd msg
+play root timeInterval chords =
+    playChordsPort ( List.map (Chords.transpose root) chords, timeInterval )
 
 
 countExercise : Model -> Model
@@ -51,8 +48,11 @@ update msg model =
         NoOp ->
             model ! []
 
-        Play chord ->
-            model ! [ play model.root chord ]
+        PlayOne chord ->
+            model ! [ play model.root 0 [ chord ] ]
+
+        Play chords ->
+            model ! [ play model.root 0.5 chords ]
 
         NewExercise ->
             if allGuessed model then
@@ -65,7 +65,7 @@ update msg model =
         MakeGuess n ->
             let
                 isRight =
-                    Array.get model.guessed (Array.fromList model.chord)
+                    Utils.get model.guessed model.chord
                         |> Maybe.map (\real -> (real % 12) == n)
             in
                 case isRight of
@@ -88,7 +88,7 @@ update msg model =
                         model ! []
 
         Exercise c ->
-            ( { model | chord = c }, play model.root c )
+            ( { model | chord = c }, play model.root 0 [ c ] )
 
         StartExercises ->
             ( { model | page = ExercisePage }, Random.generate Exercise getRandom )
@@ -101,16 +101,16 @@ keyboardMap model key =
             NewExercise
 
         'a' ->
-            Play model.chord
+            PlayOne model.chord
 
         'c' ->
-            Play [ 0, 12 ]
+            PlayOne [ 0, 12 ]
 
         _ ->
             String.fromChar key
                 |> String.toInt
                 |> Result.toMaybe
-                |> Maybe.andThen (\n -> Array.get (n - 1) <| Array.fromList (Chords.modeNotes model.mode))
+                |> Maybe.andThen (\n -> Utils.get (n - 1) (Chords.modeNotes model.mode))
                 |> Maybe.map MakeGuess
                 |> Maybe.withDefault NoOp
 
