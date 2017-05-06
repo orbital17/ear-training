@@ -1,19 +1,22 @@
 port module Main exposing (main)
 
-import Html exposing (li, div, Html, text, button, p, span)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
-import Char
 import Array
-import Random
+import Char
+import Html exposing (li, div, Html, text, button, p, span)
+import Html.Attributes exposing (class, classList)
+import Html.Events exposing (onClick)
 import Keyboard
+import Random
+import Set exposing (Set)
 import Chords exposing (Chord, getRandom, Note)
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { init = (initModel ! [])
+        { init = (update StartExercises initModel)
+
+        --{ init = (initModel ! [])
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -31,6 +34,7 @@ type alias Model =
     , correct : Int
     , error : Bool
     , guessed : Int
+    , attemps : Set Note
     , mode : Chords.Mode
     , page : Page
     }
@@ -49,6 +53,7 @@ initModel =
     , correct = 0
     , error = False
     , guessed = 0
+    , attemps = Set.empty
     , mode = Chords.Major
     , page = MainPage
     }
@@ -81,15 +86,18 @@ type Msg
 countExercise : Model -> Model
 countExercise model =
     { model
-        | guessed = 0
-        , error = False
-        , total = model.total + 1
+        | total = model.total + 1
         , correct =
             if model.error then
                 model.correct
             else
                 model.correct + 1
     }
+
+
+allGuessed : Model -> Bool
+allGuessed model =
+    model.guessed == List.length model.chord
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -102,12 +110,12 @@ update msg model =
             model ! [ play model.root chord ]
 
         NewExercise ->
-            if model.guessed /= List.length model.chord then
-                (model ! [])
-            else
-                ( countExercise model
+            if allGuessed model then
+                ( { model | guessed = 0, error = False }
                 , Random.generate Exercise getRandom
                 )
+            else
+                (model ! [])
 
         MakeGuess n ->
             let
@@ -117,10 +125,19 @@ update msg model =
             in
                 case isRight of
                     Just True ->
-                        { model | guessed = model.guessed + 1 } ! []
+                        let
+                            newModel =
+                                { model | guessed = model.guessed + 1, attemps = Set.empty }
+                        in
+                            (if allGuessed newModel then
+                                countExercise newModel
+                             else
+                                newModel
+                            )
+                                ! []
 
                     Just False ->
-                        { model | error = True } ! []
+                        { model | error = True, attemps = Set.insert n model.attemps } ! []
 
                     Nothing ->
                         model ! []
@@ -143,44 +160,68 @@ nav =
         ]
 
 
-buttons : Model -> List (Html Msg)
-buttons m =
+rightPanelButton : Msg -> String -> Bool -> Html Msg
+rightPanelButton msg title isDisabled =
+    p [ class "field" ]
+        [ button
+            [ class "button is-info is-outlined"
+            , onClick msg
+            , Html.Attributes.disabled isDisabled
+            ]
+            [ text title ]
+        ]
+
+
+rightPanelButtons : Model -> List (Html Msg)
+rightPanelButtons m =
     let
-        b msg title =
-            p [ class "field" ]
-                [ button [ class "button", onClick msg ] [ text title ]
-                ]
+        b =
+            rightPanelButton
     in
-        [ b (Play [ 0, 12 ]) "Hear tonic [c]"
-        , b (Play m.chord) "Hear again [a]"
-        , b (NewExercise) "Next [spacebar]"
+        [ b (Play [ 0, 12 ]) "Hear tonic [c]" False
+        , b (Play m.chord) "Hear again [a]" False
+        , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
         ]
 
 
 noteButtons : Model -> List (Html Msg)
 noteButtons m =
     Chords.modeNotes m.mode
-        |> List.map (\note -> button [ class "button", onClick (MakeGuess note) ] [ text (Chords.syllable note) ])
+        |> List.map
+            (\note ->
+                button
+                    [ class <|
+                        "button note "
+                            ++ (if Set.member note m.attemps then
+                                    "is-danger"
+                                else
+                                    "is-info"
+                               )
+                    , onClick (MakeGuess note)
+                    ]
+                    [ text (Chords.syllable note) ]
+            )
 
 
-answerLine : Model -> String
+answerLine : Model -> List (Html Msg)
 answerLine m =
     List.take m.guessed m.chord
         |> List.map Chords.syllable
-        |> String.join "  "
         |> flip (++)
-            (if m.guessed == List.length m.chord then
-                ""
+            (if allGuessed m then
+                []
              else
-                "  ?"
+                [ "?" ]
             )
+        |> List.map (\s -> span [ class "is-large label" ] [ text s ])
+        |> List.reverse
 
 
 quiz : Model -> List (Html Msg)
 quiz m =
-    [ div [] [ text (toString m.correct ++ " of " ++ toString m.total ++ " correct") ]
-    , div [] <| noteButtons m
-    , span [ class "is-large box" ] [ text <| answerLine m ]
+    [ div [ class "block" ] [ text (toString m.correct ++ " of " ++ toString m.total ++ " correct") ]
+    , div [ class "block" ] <| noteButtons m
+    , div [ class "block" ] <| answerLine m
     ]
 
 
@@ -189,8 +230,8 @@ content m =
     case m.page of
         ExercisePage ->
             div [ class "section columns" ]
-                [ div [ class "column is-5 is-offset-3" ] (quiz m)
-                , div [ class "column" ] (buttons m)
+                [ div [ class "column is-7 is-offset-1" ] (quiz m)
+                , div [ class "column" ] (rightPanelButtons m)
                 ]
 
         MainPage ->

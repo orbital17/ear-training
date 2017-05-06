@@ -42,14 +42,14 @@ randomFromList list =
             Random.int 0 (List.length list - 1)
 
         get i l =
-            List.head <| List.drop i l
+            Array.get i (Array.fromList l)
     in
         Random.map (\index -> get index list) gen
 
 
 randomNote : Mode -> Generator Note
 randomNote mode =
-    Random.map (Maybe.withDefault 0) <| randomFromList <| modeNotes mode
+    Random.map (Maybe.withDefault 0) (randomFromList (modeNotes mode))
 
 
 transpose : Int -> Chord -> Chord
