@@ -33,7 +33,7 @@ rightPanelButtons m =
         b =
             rightPanelButton
     in
-        [ b (Play (Chords.getCadence m.mode)) "Hear cadence" False
+        [ b (Play (Chords.getCadence m.settings.mode)) "Hear cadence" False
         , b (PlayOne [ 0, 12 ]) "Hear tonic [c]" False
         , b (PlayOne m.chord) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
@@ -42,7 +42,7 @@ rightPanelButtons m =
 
 noteButtons : Model -> List (Html Msg)
 noteButtons m =
-    Chords.modeNotes m.mode
+    Chords.modeNotes m.settings.mode
         |> List.map
             (\note ->
                 button
@@ -75,7 +75,7 @@ answerLine m =
 
 quiz : Model -> List (Html Msg)
 quiz m =
-    [ div [ class "block" ] [ text (toString m.correct ++ " of " ++ toString m.total ++ " correct") ]
+    [ div [ class "block" ] [ text (toString m.stat.correct ++ " of " ++ toString m.stat.total ++ " correct") ]
     , div [ class "block" ] <| noteButtons m
     , div [ class "block" ] <| answerLine m
     ]

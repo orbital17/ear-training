@@ -14,15 +14,37 @@ type Msg
     | StartExercises
 
 
-type alias Model =
+type alias Settings =
     { root : Int
-    , chord : Chord
-    , total : Int
+    , mode : Chords.Mode
+    }
+
+
+initSettings : Settings
+initSettings =
+    { root = 48
+    , mode = Chords.Major
+    }
+
+
+type alias Statistics =
+    { total : Int
     , correct : Int
+    }
+
+
+initStatistics : Statistics
+initStatistics =
+    { total = 0, correct = 0 }
+
+
+type alias Model =
+    { stat : Statistics
+    , settings : Settings
+    , chord : Chord
     , error : Bool
     , guessed : Int
     , attemps : Set Note
-    , mode : Chords.Mode
     , page : Page
     }
 
@@ -34,14 +56,12 @@ type Page
 
 initModel : Model
 initModel =
-    { root = 48
+    { stat = initStatistics
+    , settings = initSettings
     , chord = []
-    , total = 0
-    , correct = 0
     , error = False
     , guessed = 0
     , attemps = Set.empty
-    , mode = Chords.Major
     , page = MainPage
     }
 

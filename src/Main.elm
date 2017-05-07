@@ -6,7 +6,7 @@ import Keyboard
 import Random
 import Set exposing (Set)
 import Chords exposing (Chord, getRandom, Note)
-import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel)
+import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics)
 import View exposing (view)
 import Utils
 
@@ -14,8 +14,9 @@ import Utils
 main : Program Never Model Msg
 main =
     Html.program
-        --{ init = (update StartExercises initModel)
-        { init = (initModel ! [])
+        { init = (update StartExercises initModel)
+
+        --{ init = (initModel ! [])
         , view = view
         , update = update
         , subscriptions = subscriptions
@@ -30,16 +31,19 @@ play root timeInterval chords =
     playChordsPort ( List.map (Chords.transpose root) chords, timeInterval )
 
 
-countExercise : Model -> Model
+countExercise : Model -> Statistics
 countExercise model =
-    { model
-        | total = model.total + 1
+    let
+        stat =
+            model.stat
+    in
+        { total = stat.total + 1
         , correct =
             if model.error then
-                model.correct
+                stat.correct
             else
-                model.correct + 1
-    }
+                stat.correct + 1
+        }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -49,10 +53,10 @@ update msg model =
             model ! []
 
         PlayOne chord ->
-            model ! [ play model.root 0 [ chord ] ]
+            model ! [ play model.settings.root 0 [ chord ] ]
 
         Play chords ->
-            model ! [ play model.root 0.5 chords ]
+            model ! [ play model.settings.root 0.5 chords ]
 
         NewExercise ->
             if allGuessed model then
@@ -75,7 +79,7 @@ update msg model =
                                 { model | guessed = model.guessed + 1, attemps = Set.empty }
                         in
                             (if allGuessed newModel then
-                                countExercise newModel
+                                { newModel | stat = countExercise newModel }
                              else
                                 newModel
                             )
@@ -88,7 +92,7 @@ update msg model =
                         model ! []
 
         Exercise c ->
-            ( { model | chord = c }, play model.root 0 [ c ] )
+            ( { model | chord = c }, play model.settings.root 0 [ c ] )
 
         StartExercises ->
             ( { model | page = ExercisePage }, Random.generate Exercise getRandom )
@@ -110,7 +114,7 @@ keyboardMap model key =
             String.fromChar key
                 |> String.toInt
                 |> Result.toMaybe
-                |> Maybe.andThen (\n -> Utils.get (n - 1) (Chords.modeNotes model.mode))
+                |> Maybe.andThen (\n -> Utils.get (n - 1) (Chords.modeNotes model.settings.mode))
                 |> Maybe.map MakeGuess
                 |> Maybe.withDefault NoOp
 
