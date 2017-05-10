@@ -6,6 +6,7 @@ import Html.Events exposing (onClick)
 import Set exposing (Set)
 import Chords exposing (Chord, Note)
 import Types exposing (Msg(..), Model, Page(..), allGuessed)
+import Utils
 
 
 nav : Html Msg
@@ -34,34 +35,40 @@ rightPanelButtons m =
             rightPanelButton
     in
         [ b (Play (Chords.getCadence m.settings.mode)) "Hear cadence" False
-        , b (PlayOne [ 0, 12 ]) "Hear tonic [c]" False
-        , b (PlayOne m.chord) "Hear again [a]" False
+        , b (Play [ [ 0, 12 ] ]) "Hear tonic [c]" False
+        , b (Play m.chordsToGuess) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
         ]
 
 
-noteButtons : Model -> List (Html Msg)
-noteButtons m =
-    Chords.modeNotes m.settings.mode
-        |> List.map
-            (\note ->
-                button
-                    [ class <|
-                        "button note "
-                            ++ (if Set.member note m.attemps then
-                                    "is-danger"
-                                else
-                                    "is-info"
-                               )
-                    , onClick (MakeGuess note)
-                    ]
-                    [ text (Chords.syllable note) ]
-            )
+answerButton : Model -> Types.AnswerOption -> Html Msg
+answerButton m answerOption =
+    let
+        attemted =
+            Set.member answerOption.index m.attemps
+    in
+        button
+            [ classList
+                [ ( "button", True )
+                , ( "answer-button", True )
+                , ( "is-danger", attemted )
+                , ( "is-info", not attemted )
+                ]
+            , onClick (MakeGuess answerOption.index)
+            ]
+            [ text <| answerOption.name ++ " [" ++ String.fromChar answerOption.keyMap ++ "]" ]
+
+
+answerButtons : Model -> List (Html Msg)
+answerButtons m =
+    List.map (answerButton m) (Types.getOptionsFromModel m)
 
 
 answerLine : Model -> List (Html Msg)
 answerLine m =
-    List.take m.guessed m.chord
+    Utils.get 0 m.chordsToGuess
+        |> Maybe.withDefault []
+        |> List.take m.guessed
         |> List.map Chords.syllable
         |> flip (++)
             (if allGuessed m then
@@ -76,7 +83,7 @@ answerLine m =
 quiz : Model -> List (Html Msg)
 quiz m =
     [ div [ class "block" ] [ text (toString m.stat.correct ++ " of " ++ toString m.stat.total ++ " correct") ]
-    , div [ class "block" ] <| noteButtons m
+    , div [ class "block" ] <| answerButtons m
     , div [ class "block" ] <| answerLine m
     ]
 

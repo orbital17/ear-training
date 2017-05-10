@@ -1,6 +1,6 @@
 
 
-.button.note {
+.button.answer-button {
   margin: 7px;
-  width: 60px;
+  min-width: 60px;
 }

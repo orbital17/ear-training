@@ -5,7 +5,7 @@ import Html
 import Keyboard
 import Random
 import Set exposing (Set)
-import Chords exposing (Chord, getRandom, Note)
+import Chords exposing (Chord, Note)
 import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics)
 import View exposing (view)
 import Utils
@@ -18,7 +18,7 @@ main =
 
         --{ init = (initModel ! [])
         , view = view
-        , update = update
+        , update = debugUpdate
         , subscriptions = subscriptions
         }
 
@@ -46,31 +46,48 @@ countExercise model =
         }
 
 
+debugUpdate : Msg -> Model -> ( Model, Cmd Msg )
+debugUpdate msg model =
+    let
+        ( newModel, cmds ) =
+            update msg model
+
+        _ =
+            Debug.log "msg" msg
+
+        _ =
+            Debug.log "model" newModel
+    in
+        ( newModel, cmds )
+
+
+getNewExercise : Model -> ( Model, Cmd Msg )
+getNewExercise model =
+    ( { model | guessed = 0, error = False }
+    , Random.generate Exercise (Chords.randomInterval model.settings.mode)
+    )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
             model ! []
 
-        PlayOne chord ->
-            model ! [ play model.settings.root 0 [ chord ] ]
-
         Play chords ->
             model ! [ play model.settings.root 0.5 chords ]
 
         NewExercise ->
             if allGuessed model then
-                ( { model | guessed = 0, error = False }
-                , Random.generate Exercise getRandom
-                )
+                getNewExercise model
             else
                 (model ! [])
 
         MakeGuess n ->
             let
                 isRight =
-                    Utils.get model.guessed model.chord
-                        |> Maybe.map (\real -> (real % 12) == n)
+                    Utils.get model.guessed model.questions
+                        |> Maybe.map (\q -> q.answer == n)
             in
                 case isRight of
                     Just True ->
@@ -78,12 +95,10 @@ update msg model =
                             newModel =
                                 { model | guessed = model.guessed + 1, attemps = Set.empty }
                         in
-                            (if allGuessed newModel then
-                                { newModel | stat = countExercise newModel }
-                             else
-                                newModel
-                            )
-                                ! []
+                            if allGuessed newModel then
+                                getNewExercise { newModel | stat = countExercise newModel }
+                            else
+                                newModel ! []
 
                     Just False ->
                         { model | error = True, attemps = Set.insert n model.attemps } ! []
@@ -91,32 +106,43 @@ update msg model =
                     Nothing ->
                         model ! []
 
-        Exercise c ->
-            ( { model | chord = c }, play model.settings.root 0 [ c ] )
+        Exercise chords ->
+            ( { model
+                | chordsToGuess = chords
+                , questions = Types.getQuestions model.settings.guessChordName chords
+              }
+            , play model.settings.root 0 chords
+            )
 
         StartExercises ->
-            ( { model | page = ExercisePage }, Random.generate Exercise getRandom )
+            getNewExercise { model | page = ExercisePage }
 
 
 keyboardMap : Model -> Char -> Msg
 keyboardMap model key =
-    case key of
-        ' ' ->
-            NewExercise
+    let
+        answer =
+            Types.getOptionsFromModel model
+                |> List.filter (\option -> option.keyMap == key)
+                |> List.head
+    in
+        case answer of
+            Just a ->
+                MakeGuess a.index
 
-        'a' ->
-            PlayOne model.chord
+            Nothing ->
+                case key of
+                    ' ' ->
+                        NewExercise
 
-        'c' ->
-            PlayOne [ 0, 12 ]
+                    'a' ->
+                        Play model.chordsToGuess
 
-        _ ->
-            String.fromChar key
-                |> String.toInt
-                |> Result.toMaybe
-                |> Maybe.andThen (\n -> Utils.get (n - 1) (Chords.modeNotes model.settings.mode))
-                |> Maybe.map MakeGuess
-                |> Maybe.withDefault NoOp
+                    'c' ->
+                        Play [ [ 0, 12 ] ]
+
+                    _ ->
+                        NoOp
 
 
 subscriptions : Model -> Sub Msg
