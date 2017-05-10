@@ -35,6 +35,7 @@ rightPanelButtons m =
             rightPanelButton
     in
         [ b (Play (Chords.getCadence m.settings.mode)) "Hear cadence" False
+        , b (Play <| Chords.toMelodic m.chordsToGuess) "Hear sequencially" False
         , b (Play [ [ 0, 12 ] ]) "Hear tonic [c]" False
         , b (Play m.chordsToGuess) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))

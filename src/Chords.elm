@@ -85,6 +85,12 @@ transpose n =
     List.map ((+) n)
 
 
+toMelodic : List Chord -> List Chord
+toMelodic chords =
+    List.concat chords
+        |> List.map (\n -> [ n ])
+
+
 randomNote : Mode -> Generator Note
 randomNote mode =
     Random.map (Maybe.withDefault -100) (Utils.randomFromList (modeNotes mode))
