@@ -21,6 +21,8 @@ type alias Settings =
     , mode : Music.Mode
     , guessChordName : Bool
     , autoProceed : Bool
+    , chordSize : Int
+    , chordsInSequence : Int
     }
 
 
@@ -30,6 +32,8 @@ initSettings =
     , mode = Music.Major
     , guessChordName = False
     , autoProceed = True
+    , chordSize = 2
+    , chordsInSequence = 2
     }
 
 

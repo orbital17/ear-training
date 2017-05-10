@@ -91,13 +91,8 @@ toMelodic chords =
         |> List.map (\n -> [ n ])
 
 
-randomNote : Mode -> Generator Note
-randomNote mode =
-    Random.map (Maybe.withDefault -100) (Utils.randomFromList (modeNotes mode))
-
-
-intervals : List Note -> List Chord
-intervals scale =
+intervalsOptions : List Note -> List Chord
+intervalsOptions scale =
     List.concatMap
         (\root ->
             List.map
@@ -109,10 +104,20 @@ intervals scale =
         |> List.map (\( root, top ) -> [ root, top ])
 
 
-randomInterval : Mode -> Generator (List Chord)
-randomInterval =
-    Random.map (\c -> [ c ])
-        << Random.map (Maybe.withDefault [ 0, 0 ])
-        << Utils.randomFromList
-        << intervals
-        << modeNotes
+getRandom : Mode -> Int -> Generator Chord
+getRandom mode chordSize =
+    let
+        optionsList =
+            case chordSize of
+                1 ->
+                    List.map (\n -> [ n ]) <| modeNotes mode
+
+                2 ->
+                    intervalsOptions <| modeNotes mode
+
+                _ ->
+                    []
+    in
+        optionsList
+            |> Utils.randomFromList
+            |> Random.map (Maybe.withDefault [])

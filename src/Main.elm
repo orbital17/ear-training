@@ -61,10 +61,19 @@ debugUpdate msg model =
         ( newModel, cmds )
 
 
+getRandomChords : Types.Settings -> Random.Generator (List Chord)
+getRandomChords s =
+    let
+        getChord =
+            Music.getRandom s.mode s.chordSize
+    in
+        Random.list s.chordsInSequence getChord
+
+
 getNewExercise : Model -> ( Model, Cmd Msg )
 getNewExercise model =
     ( { model | guessed = 0, error = False }
-    , Random.generate Exercise (Music.randomInterval model.settings.mode)
+    , Random.generate Exercise (getRandomChords model.settings)
     )
 
 
