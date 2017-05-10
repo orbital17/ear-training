@@ -3,7 +3,7 @@
 const ac = new AudioContext();
 let instrument;
 
-Soundfont.instrument(ac, '/assets/acoustic_grand_piano-mp3.js').then(function (i) {
+Soundfont.instrument(ac, '/assets/acoustic_grand_piano-ogg.js').then(function (i) {
   instrument = i;
 })
 
@@ -13,8 +13,14 @@ const chordToNotes = function(chord, time) {
 
 const playChords = function([chords, interval]) {
   if (!instrument) return;
-  const join = (arr) => arr.reduce((acc, current) => acc.concat(current), []);
-  const notes = join(chords.map((c, i) => chordToNotes(c, interval * i)));
-  instrument.stop();
-  instrument.schedule(ac.currentTime, notes);
+  const notes = chords.map((c) => chordToNotes(c, 0));
+
+  const play = function(i) {
+    if (i >= notes.length) return;
+    instrument.stop();
+    instrument.schedule(ac.currentTime, notes[i]);
+    setTimeout(() => play(i + 1), 1000 * interval);
+  }
+
+  play(0);
 }
