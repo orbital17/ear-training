@@ -1,4 +1,4 @@
-module Chords exposing (..)
+module Music exposing (..)
 
 import Random exposing (Generator)
 import Utils
@@ -111,4 +111,8 @@ intervals scale =
 
 randomInterval : Mode -> Generator (List Chord)
 randomInterval =
-    Random.map (\c -> [ c ]) << Random.map (Maybe.withDefault [ 0, 0 ]) << Utils.randomFromList << intervals << modeNotes
+    Random.map (\c -> [ c ])
+        << Random.map (Maybe.withDefault [ 0, 0 ])
+        << Utils.randomFromList
+        << intervals
+        << modeNotes

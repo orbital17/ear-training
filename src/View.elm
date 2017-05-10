@@ -4,7 +4,7 @@ import Html exposing (li, div, Html, text, button, p, span, input)
 import Html.Attributes exposing (class, classList, type_, checked)
 import Html.Events exposing (onClick)
 import Set exposing (Set)
-import Chords exposing (Chord, Note)
+import Music exposing (Chord, Note, Mode(..))
 import Types exposing (Msg(..), Model, Page(..), allGuessed)
 import Utils
 
@@ -34,8 +34,8 @@ rightPanelButtons m =
         b =
             rightPanelButton
     in
-        [ b (Play (Chords.getCadence m.settings.mode)) "Hear cadence" False
-        , b (Play <| Chords.toMelodic m.chordsToGuess) "Hear sequencially" False
+        [ b (Play (Music.getCadence m.settings.mode)) "Hear cadence" False
+        , b (Play <| Music.toMelodic m.chordsToGuess) "Hear sequencially" False
         , b (Play [ [ 0, 12 ] ]) "Hear tonic [c]" False
         , b (Play m.chordsToGuess) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
@@ -79,7 +79,7 @@ answerLine m =
     Utils.get 0 m.chordsToGuess
         |> Maybe.withDefault []
         |> List.take m.guessed
-        |> List.map Chords.syllable
+        |> List.map Music.syllable
         |> flip (++)
             (if allGuessed m then
                 []
@@ -135,8 +135,8 @@ settingsView m =
                 ]
     in
         [ div [ class "field has-addons" ]
-            [ b (ChangeSettings (\s -> { s | mode = Chords.Major })) "Major" (m.settings.mode == Chords.Major)
-            , b (ChangeSettings (\s -> { s | mode = Chords.Minor })) "Minor" (m.settings.mode == Chords.Minor)
+            [ b (ChangeSettings (\s -> { s | mode = Major })) "Major" (m.settings.mode == Major)
+            , b (ChangeSettings (\s -> { s | mode = Minor })) "Minor" (m.settings.mode == Minor)
             ]
         , div [ class "field" ]
             [ switch (ChangeSettings (\s -> { s | autoProceed = not s.autoProceed }))

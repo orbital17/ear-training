@@ -5,7 +5,7 @@ import Html
 import Keyboard
 import Random
 import Set exposing (Set)
-import Chords exposing (Chord, Note)
+import Music exposing (Chord, Note)
 import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics)
 import View exposing (view)
 import Utils
@@ -28,7 +28,7 @@ port playChordsPort : ( List Chord, Float ) -> Cmd msg
 
 play : Int -> Float -> List Chord -> Cmd msg
 play root timeInterval chords =
-    playChordsPort ( List.map (Chords.transpose root) chords, timeInterval )
+    playChordsPort ( List.map (Music.transpose root) chords, timeInterval )
 
 
 countExercise : Model -> Statistics
@@ -64,7 +64,7 @@ debugUpdate msg model =
 getNewExercise : Model -> ( Model, Cmd Msg )
 getNewExercise model =
     ( { model | guessed = 0, error = False }
-    , Random.generate Exercise (Chords.randomInterval model.settings.mode)
+    , Random.generate Exercise (Music.randomInterval model.settings.mode)
     )
 
 

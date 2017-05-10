@@ -1,6 +1,6 @@
 module Types exposing (..)
 
-import Chords exposing (Chord, Note)
+import Music exposing (Chord, Note)
 import Set exposing (Set)
 import Utils
 
@@ -18,7 +18,7 @@ type Msg
 
 type alias Settings =
     { root : Int
-    , mode : Chords.Mode
+    , mode : Music.Mode
     , guessChordName : Bool
     , autoProceed : Bool
     }
@@ -27,7 +27,7 @@ type alias Settings =
 initSettings : Settings
 initSettings =
     { root = 48
-    , mode = Chords.Major
+    , mode = Music.Major
     , guessChordName = False
     , autoProceed = True
     }
@@ -67,14 +67,14 @@ gammaKeyMap =
     [ '1', 'w', '2', 'e', '3', '4', 'r', '5', 'y', '6', 'u', '7', '8' ]
 
 
-getOptions : Chords.Mode -> QuestionType -> List AnswerOption
+getOptions : Music.Mode -> QuestionType -> List AnswerOption
 getOptions m t =
     case t of
         Degree ->
-            Chords.modeNotes m
+            Music.modeNotes m
                 |> List.map
                     (\n ->
-                        { name = Chords.syllable n
+                        { name = Music.syllable n
                         , index = n
                         , keyMap = Maybe.withDefault 'd' (Utils.get n gammaKeyMap)
                         }
@@ -85,7 +85,7 @@ getOptions m t =
                 answerOption name index keyMap =
                     { name = name, index = index, keyMap = keyMap }
             in
-                List.map3 answerOption Chords.intervalNames (List.range 0 12) gammaKeyMap
+                List.map3 answerOption Music.intervalNames (List.range 0 12) gammaKeyMap
 
 
 getOptionsFromModel : Model -> List AnswerOption
