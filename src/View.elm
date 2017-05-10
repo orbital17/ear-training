@@ -1,7 +1,7 @@
 module View exposing (..)
 
-import Html exposing (li, div, Html, text, button, p, span)
-import Html.Attributes exposing (class, classList)
+import Html exposing (li, div, Html, text, button, p, span, input)
+import Html.Attributes exposing (class, classList, type_, checked)
 import Html.Events exposing (onClick)
 import Set exposing (Set)
 import Chords exposing (Chord, Note)
@@ -38,6 +38,7 @@ rightPanelButtons m =
         , b (Play [ [ 0, 12 ] ]) "Hear tonic [c]" False
         , b (Play m.chordsToGuess) "Hear again [a]" False
         , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
+        , b (MoveToPage SettingsPage) "Settings" False
         ]
 
 
@@ -46,6 +47,11 @@ answerButton m answerOption =
     let
         attemted =
             Set.member answerOption.index m.attemps
+
+        isLastRightAnswer =
+            Utils.get (m.guessed - 1) m.questions
+                |> Maybe.map (\q -> q.answer == answerOption.index)
+                |> Maybe.withDefault False
     in
         button
             [ classList
@@ -53,6 +59,9 @@ answerButton m answerOption =
                 , ( "answer-button", True )
                 , ( "is-danger", attemted )
                 , ( "is-info", not attemted )
+                , ( "is-success"
+                  , (m.guessed == List.length m.questions) && (m.guessed > 0) && isLastRightAnswer
+                  )
                 ]
             , onClick (MakeGuess answerOption.index)
             ]
@@ -82,10 +91,63 @@ answerLine m =
 
 quiz : Model -> List (Html Msg)
 quiz m =
-    [ div [ class "block" ] [ text (toString m.stat.correct ++ " of " ++ toString m.stat.total ++ " correct") ]
+    [ div [ class "block" ]
+        [ text
+            (toString m.stat.correct
+                ++ " of "
+                ++ toString m.stat.total
+                ++ " correct"
+            )
+        ]
     , div [ class "block" ] <| answerButtons m
     , div [ class "block" ] <| answerLine m
     ]
+
+
+settingsView : Model -> List (Html Msg)
+settingsView m =
+    let
+        b msg title isSelected =
+            p [ class "control" ]
+                [ button
+                    [ classList
+                        [ ( "button is-info", True )
+                        , ( "is-outlined", not isSelected )
+
+                        --, ( "is-active", isSelected )
+                        ]
+                    , onClick msg
+                    ]
+                    [ text title ]
+                ]
+
+        switch msg label checked =
+            Html.label [ class "switch" ]
+                [ input
+                    [ type_ "checkbox"
+                    , Html.Events.onCheck (\_ -> msg)
+                    , Html.Attributes.checked checked
+                    ]
+                    []
+                , div [ class "slider round" ] []
+                , div [ class "label" ] [ text label ]
+                ]
+    in
+        [ div [ class "field has-addons" ]
+            [ b (ChangeSettings (\s -> { s | mode = Chords.Major })) "Major" (m.settings.mode == Chords.Major)
+            , b (ChangeSettings (\s -> { s | mode = Chords.Minor })) "Minor" (m.settings.mode == Chords.Minor)
+            ]
+        , div [ class "field" ]
+            [ switch (ChangeSettings (\s -> { s | autoProceed = not s.autoProceed }))
+                "Auto proceed"
+                m.settings.autoProceed
+            ]
+        , div [ class "field" ]
+            [ switch (ChangeSettings (\s -> { s | guessChordName = not s.guessChordName }))
+                "Name guess"
+                m.settings.guessChordName
+            ]
+        ]
 
 
 content : Model -> Html Msg
@@ -100,6 +162,18 @@ content m =
         MainPage ->
             div [ class "has-text-centered" ]
                 [ button [ class "button is-primary is-large", (onClick StartExercises) ] [ text "Start" ] ]
+
+        SettingsPage ->
+            div [ class "section columns" ]
+                [ div [ class "column is-7 is-offset-1" ] (settingsView m)
+                , div [ class "column" ]
+                    [ button
+                        [ class "button is-info is-outlined"
+                        , (onClick <| MoveToPage ExercisePage)
+                        ]
+                        [ text "Back" ]
+                    ]
+                ]
 
 
 view : Model -> Html Msg

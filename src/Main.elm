@@ -14,9 +14,9 @@ import Utils
 main : Program Never Model Msg
 main =
     Html.program
-        { init = (update StartExercises initModel)
-
-        --{ init = (initModel ! [])
+        --{ init = (update StartExercises initModel)
+        --{ init = ({ initModel | page = SettingsPage } ! [])
+        { init = (initModel ! [])
         , view = view
         , update = debugUpdate
         , subscriptions = subscriptions
@@ -96,7 +96,10 @@ update msg model =
                                 { model | guessed = model.guessed + 1, attemps = Set.empty }
                         in
                             if allGuessed newModel then
-                                getNewExercise { newModel | stat = countExercise newModel }
+                                if model.settings.autoProceed then
+                                    getNewExercise { newModel | stat = countExercise newModel }
+                                else
+                                    { newModel | stat = countExercise newModel } ! []
                             else
                                 newModel ! []
 
@@ -116,6 +119,12 @@ update msg model =
 
         StartExercises ->
             getNewExercise { model | page = ExercisePage }
+
+        ChangeSettings f ->
+            { model | settings = f model.settings } ! []
+
+        MoveToPage page ->
+            { model | page = page } ! []
 
 
 keyboardMap : Model -> Char -> Msg

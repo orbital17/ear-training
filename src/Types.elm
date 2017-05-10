@@ -12,6 +12,8 @@ type Msg
     | Exercise (List Chord)
     | MakeGuess Note
     | StartExercises
+    | ChangeSettings (Settings -> Settings)
+    | MoveToPage Page
 
 
 type alias Settings =
@@ -26,7 +28,7 @@ initSettings : Settings
 initSettings =
     { root = 48
     , mode = Chords.Major
-    , guessChordName = True
+    , guessChordName = False
     , autoProceed = True
     }
 
@@ -88,10 +90,21 @@ getOptions m t =
 
 getOptionsFromModel : Model -> List AnswerOption
 getOptionsFromModel m =
-    Utils.get m.guessed m.questions
-        |> Maybe.map .qType
-        |> Maybe.map (getOptions m.settings.mode)
-        |> Maybe.withDefault []
+    let
+        get n =
+            Utils.get n m.questions
+                |> Maybe.map .qType
+                |> Maybe.map (getOptions m.settings.mode)
+
+        current =
+            get m.guessed
+    in
+        case current of
+            Just _ ->
+                current |> Maybe.withDefault []
+
+            Nothing ->
+                get (m.guessed - 1) |> Maybe.withDefault []
 
 
 getQuestions : Bool -> List Chord -> List Question
@@ -131,6 +144,7 @@ type alias Model =
 type Page
     = MainPage
     | ExercisePage
+    | SettingsPage
 
 
 initModel : Model
