@@ -10,6 +10,21 @@
   margin-left: 50px;
 }
 
+.settings-field {
+  margin: 15px 0;
+}
+
+.settings-field .setting-label {
+  display: inline-block;
+  min-width: 140px;
+  vertical-align: bottom;
+  margin-bottom: 9px;
+}
+
+.settings-field .field, .settings-field p {
+  display: inline-block;
+}
+
 
 /*************** SWITCH START *********************/
 /* The switch - the box around the slider */

@@ -130,7 +130,7 @@ settingsView m =
                     [ text title ]
                 ]
 
-        switch msg label checked =
+        switch msg checked =
             Html.label [ class "switch" ]
                 [ input
                     [ type_ "checkbox"
@@ -139,28 +139,44 @@ settingsView m =
                     ]
                     []
                 , div [ class "slider round" ] []
-                , div [ class "label" ] [ text label ]
                 ]
+
+        settingField title inputs =
+            div [ class "settings-field" ] [ div [ class "setting-label" ] [ text title ], inputs ]
     in
-        [ div [ class "field has-addons" ]
-            [ b (ChangeSettings (\s -> { s | mode = Major })) "Major" (m.settings.mode == Major)
-            , b (ChangeSettings (\s -> { s | mode = Minor })) "Minor" (m.settings.mode == Minor)
-            ]
-        , div [ class "field" ]
-            [ switch (ChangeSettings (\s -> { s | autoProceed = not s.autoProceed }))
-                "Auto proceed"
-                m.settings.autoProceed
-            ]
-        , div [ class "field" ]
-            [ switch (ChangeSettings (\s -> { s | guessChordName = not s.guessChordName }))
-                "Name guess"
-                m.settings.guessChordName
-            ]
-        , div [ class "field has-addons" ]
-            [ b (ChangeSettings (\s -> { s | delay = 0.5 })) "0.5" (m.settings.delay == 0.5)
-            , b (ChangeSettings (\s -> { s | delay = 1 })) "1" (m.settings.delay == 1)
-            , b (ChangeSettings (\s -> { s | delay = 1.2 })) "1.2" (m.settings.delay == 1.2)
-            ]
+        [ settingField "Scale" <|
+            div [ class "field has-addons" ]
+                [ b (ChangeSettings (\s -> { s | mode = Major })) "Major" (m.settings.mode == Major)
+                , b (ChangeSettings (\s -> { s | mode = Minor })) "Minor" (m.settings.mode == Minor)
+                ]
+        , settingField "Auto proceed" <|
+            div [ class "field" ]
+                [ switch (ChangeSettings (\s -> { s | autoProceed = not s.autoProceed }))
+                    m.settings.autoProceed
+                ]
+        , settingField "Name guess" <|
+            div [ class "field has-addons" ]
+                [ switch (ChangeSettings (\s -> { s | guessChordName = not s.guessChordName }))
+                    m.settings.guessChordName
+                ]
+        , settingField "Delay" <|
+            div [ class "field has-addons" ]
+                [ b (ChangeSettings (\s -> { s | delay = 0.4 })) "0.4" (m.settings.delay == 0.4)
+                , b (ChangeSettings (\s -> { s | delay = 0.7 })) "0.7" (m.settings.delay == 0.7)
+                , b (ChangeSettings (\s -> { s | delay = 1 })) "1" (m.settings.delay == 1)
+                ]
+        , settingField "Notes in chord" <|
+            div [ class "field has-addons" ]
+                [ b (ChangeSettings (\s -> { s | chordSize = 1 })) "1" (m.settings.chordSize == 1)
+                , b (ChangeSettings (\s -> { s | chordSize = 2 })) "2" (m.settings.chordSize == 2)
+                ]
+        , settingField "Chords number" <|
+            div [ class "field has-addons" ]
+                [ b (ChangeSettings (\s -> { s | chordsInSequence = 1 })) "1" (m.settings.chordsInSequence == 1)
+                , b (ChangeSettings (\s -> { s | chordsInSequence = 2 })) "2" (m.settings.chordsInSequence == 2)
+                , b (ChangeSettings (\s -> { s | chordsInSequence = 3 })) "3" (m.settings.chordsInSequence == 3)
+                , b (ChangeSettings (\s -> { s | chordsInSequence = 4 })) "4" (m.settings.chordsInSequence == 4)
+                ]
         ]
 
 
