@@ -69,6 +69,11 @@ getCadence mode =
     List.map (getChord mode) [ 1, 4, 5, 1 ]
 
 
+tonicOctave : List Chord
+tonicOctave =
+    [ [ 0, 12 ] ]
+
+
 intervalNames : List String
 intervalNames =
     [ "Unison", "Minor 2nd", "Major 2nd", "Minor 3rd", "Major 3rd", "Perfect 4th", "Tritone", "Perfect 5th", "Minor 6th", "Major 6th", "Minor 7th", "Major 7th", "Octave" ]

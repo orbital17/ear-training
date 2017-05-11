@@ -84,7 +84,7 @@ update msg model =
             model ! []
 
         Play chords ->
-            model ! [ play model.settings.root 0.5 chords ]
+            model ! [ play model.settings.root model.settings.delay chords ]
 
         NewExercise ->
             if allGuessed model then
@@ -123,7 +123,7 @@ update msg model =
                 | chordsToGuess = chords
                 , questions = Types.getQuestions model.settings.guessChordName chords
               }
-            , play model.settings.root 0 chords
+            , play model.settings.root model.settings.delay chords
             )
 
         StartExercises ->
@@ -157,7 +157,7 @@ keyboardMap model key =
                         Play model.chordsToGuess
 
                     'c' ->
-                        Play [ [ 0, 12 ] ]
+                        Play Music.tonicOctave
 
                     _ ->
                         NoOp

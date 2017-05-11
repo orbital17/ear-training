@@ -148,6 +148,11 @@ settingsView m =
                 "Name guess"
                 m.settings.guessChordName
             ]
+        , div [ class "field has-addons" ]
+            [ b (ChangeSettings (\s -> { s | delay = 0.5 })) "0.5" (m.settings.delay == 0.5)
+            , b (ChangeSettings (\s -> { s | delay = 1 })) "1" (m.settings.delay == 1)
+            , b (ChangeSettings (\s -> { s | delay = 1.2 })) "1.2" (m.settings.delay == 1.2)
+            ]
         ]
 
 

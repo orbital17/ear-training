@@ -23,6 +23,7 @@ type alias Settings =
     , autoProceed : Bool
     , chordSize : Int
     , chordsInSequence : Int
+    , delay : Float
     }
 
 
@@ -34,6 +35,7 @@ initSettings =
     , autoProceed = True
     , chordSize = 2
     , chordsInSequence = 2
+    , delay = 0.5
     }
 
 
