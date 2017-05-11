@@ -88,6 +88,9 @@ update msg model =
         Play chords ->
             model ! [ play model.settings.root model.settings.delay chords ]
 
+        PlayCustomDelay delay chords ->
+            model ! [ play model.settings.root delay chords ]
+
         NewExercise ->
             if allGuessed model then
                 getNewExercise model

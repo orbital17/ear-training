@@ -8,6 +8,7 @@ import Utils
 type Msg
     = NoOp
     | Play (List Chord)
+    | PlayCustomDelay Float (List Chord)
     | NewExercise
     | Exercise (List Chord)
     | MakeGuess Note
