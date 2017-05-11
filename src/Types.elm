@@ -32,7 +32,7 @@ initSettings : Settings
 initSettings =
     { root = 48
     , mode = Music.Major
-    , guessChordName = False
+    , guessChordName = True
     , autoProceed = False
     , chordSize = 3
     , chordsInSequence = 1
@@ -54,6 +54,7 @@ initStatistics =
 type QuestionType
     = Degree
     | IntervalName
+    | TriadName
 
 
 type alias Question =
@@ -74,25 +75,33 @@ gammaKeyMap =
     [ '1', 'w', '2', 'e', '3', '4', 'r', '5', 'y', '6', 'u', '7', '8' ]
 
 
+triadKeyMap : List Char
+triadKeyMap =
+    [ '1', '2', '3', '4', '5', '6', '7', '8', '9' ]
+
+
 getOptions : Music.Mode -> QuestionType -> List AnswerOption
 getOptions m t =
-    case t of
-        Degree ->
-            Music.modeNotes m
-                |> List.map
-                    (\n ->
-                        { name = Music.syllable n
-                        , index = n
-                        , keyMap = Maybe.withDefault 'd' (Utils.get n gammaKeyMap)
-                        }
-                    )
+    let
+        answerOption name index keyMap =
+            { name = name, index = index, keyMap = keyMap }
+    in
+        case t of
+            Degree ->
+                Music.modeNotes m
+                    |> List.map
+                        (\n ->
+                            { name = Music.syllable n
+                            , index = n
+                            , keyMap = Maybe.withDefault 'd' (Utils.get n gammaKeyMap)
+                            }
+                        )
 
-        IntervalName ->
-            let
-                answerOption name index keyMap =
-                    { name = name, index = index, keyMap = keyMap }
-            in
+            IntervalName ->
                 List.map3 answerOption Music.intervalNames (List.range 0 12) gammaKeyMap
+
+            TriadName ->
+                List.map3 answerOption Music.triadNames (List.range 0 7) triadKeyMap
 
 
 questionToString : Question -> String
@@ -102,7 +111,10 @@ questionToString q =
             Music.syllable q.answer
 
         IntervalName ->
-            Maybe.withDefault "" (Utils.get q.answer Music.intervalNames)
+            Music.intervalName q.answer
+
+        TriadName ->
+            Music.triadName q.answer
 
 
 getOptionsFromModel : Model -> List AnswerOption
@@ -120,6 +132,9 @@ getQuestion m =
             case chord of
                 [ a, b ] ->
                     { qType = IntervalName, answer = b - a }
+
+                [ a, b, c ] ->
+                    { qType = TriadName, answer = Music.triadIndex ( b - a, c - b ) }
 
                 _ ->
                     { qType = IntervalName, answer = 0 }

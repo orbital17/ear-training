@@ -129,9 +129,20 @@ triadNames =
     [ "maj", "min", "aug", "dim", "maj6", "min6" ]
 
 
+triadName : Int -> String
+triadName i =
+    Utils.get i triadNames
+        |> Maybe.withDefault "Unknown interval"
+
+
 triadMasks : List ( Int, Int )
 triadMasks =
     [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ) ]
+
+
+triadIndex : ( Int, Int ) -> Int
+triadIndex mask =
+    Maybe.withDefault 0 <| Utils.indexOf mask triadMasks
 
 
 triadOptions : List Note -> List Chord
@@ -161,6 +172,10 @@ chordName c =
 
         [ a, b ] ->
             Utils.get (b - a) intervalNames
+                |> Maybe.withDefault "_"
+
+        [ a, b, c ] ->
+            Utils.get (triadIndex ( b - a, c - b )) triadNames
                 |> Maybe.withDefault "_"
 
         _ ->

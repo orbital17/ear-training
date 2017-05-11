@@ -183,6 +183,7 @@ settingsView m =
             div [ class "field has-addons" ]
                 [ b (ChangeSettings (\s -> { s | chordSize = 1 })) "1" (m.settings.chordSize == 1)
                 , b (ChangeSettings (\s -> { s | chordSize = 2 })) "2" (m.settings.chordSize == 2)
+                , b (ChangeSettings (\s -> { s | chordSize = 3 })) "3" (m.settings.chordSize == 3)
                 ]
         , settingField "Chords number" <|
             div [ class "field has-addons" ] <|
