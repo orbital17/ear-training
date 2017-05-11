@@ -85,6 +85,20 @@ intervalName i =
         |> Maybe.withDefault "Unknown interval"
 
 
+chordName : Chord -> String
+chordName c =
+    case c of
+        [ a ] ->
+            "Unison"
+
+        [ a, b ] ->
+            Utils.get (b - a) intervalNames
+                |> Maybe.withDefault "_"
+
+        _ ->
+            "_"
+
+
 transpose : Int -> Chord -> Chord
 transpose n =
     List.map ((+) n)

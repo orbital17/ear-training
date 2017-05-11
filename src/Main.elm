@@ -63,8 +63,11 @@ debugUpdate msg model =
 getRandomChords : Types.Settings -> Random.Generator (List Chord)
 getRandomChords s =
     let
+        transpose octave chord =
+            Music.transpose (12 * octave) chord
+
         getChord =
-            Music.getRandom s.mode s.chordSize
+            Random.map2 transpose (Random.int 0 1) (Music.getRandom s.mode s.chordSize)
     in
         Random.list s.chordsInSequence getChord
 

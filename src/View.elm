@@ -87,9 +87,23 @@ answerLine m =
             else
                 ""
 
+        chordNameCell chordIndex chord =
+            if (chordIndex < m.guessed.chords) then
+                Music.chordName chord
+            else if chordIndex == m.guessed.chords && (List.length chord) == m.guessed.notes then
+                " ? "
+            else
+                ""
+
         chordColumn chordIndex chord =
             chord
                 |> List.indexedMap (noteCell chordIndex)
+                |> flip List.append
+                    (if m.settings.guessChordName then
+                        [ chordNameCell chordIndex chord ]
+                     else
+                        []
+                    )
                 |> List.map (\s -> span [ class "is-large label" ] [ text s ])
                 |> List.reverse
     in
