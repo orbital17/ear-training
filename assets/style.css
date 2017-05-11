@@ -5,6 +5,11 @@
   min-width: 60px;
 }
 
+.answer-chord-column {
+  display: inline-block;
+  margin-left: 50px;
+}
+
 
 /*************** SWITCH START *********************/
 /* The switch - the box around the slider */

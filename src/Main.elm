@@ -8,7 +8,6 @@ import Set exposing (Set)
 import Music exposing (Chord, Note)
 import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics)
 import View exposing (view)
-import Utils
 
 
 main : Program Never Model Msg
@@ -72,7 +71,7 @@ getRandomChords s =
 
 getNewExercise : Model -> ( Model, Cmd Msg )
 getNewExercise model =
-    ( { model | guessed = 0, error = False }
+    ( { model | guessed = { chords = 0, notes = 0 }, error = False }
     , Random.generate Exercise (getRandomChords model.settings)
     )
 
@@ -95,14 +94,16 @@ update msg model =
         MakeGuess n ->
             let
                 isRight =
-                    Utils.get model.guessed model.questions
-                        |> Maybe.map (\q -> q.answer == n)
+                    if allGuessed model then
+                        Nothing
+                    else
+                        (model.currentQuestion |> Maybe.map (\q -> q.answer == n))
             in
                 case isRight of
                     Just True ->
                         let
                             newModel =
-                                { model | guessed = model.guessed + 1, attemps = Set.empty }
+                                Types.nextQuestion model
                         in
                             if allGuessed newModel then
                                 if model.settings.autoProceed then
@@ -119,12 +120,13 @@ update msg model =
                         model ! []
 
         Exercise chords ->
-            ( { model
-                | chordsToGuess = chords
-                , questions = Types.getQuestions model.settings.guessChordName chords
-              }
-            , play model.settings.root model.settings.delay chords
-            )
+            let
+                newModel =
+                    { model | chordsToGuess = chords }
+            in
+                ( { newModel | currentQuestion = Types.getQuestion newModel }
+                , play model.settings.root model.settings.delay chords
+                )
 
         StartExercises ->
             getNewExercise { model | page = ExercisePage }

@@ -32,10 +32,10 @@ initSettings =
     { root = 48
     , mode = Music.Major
     , guessChordName = False
-    , autoProceed = True
+    , autoProceed = False
     , chordSize = 2
     , chordsInSequence = 2
-    , delay = 0.5
+    , delay = 1
     }
 
 
@@ -94,27 +94,26 @@ getOptions m t =
                 List.map3 answerOption Music.intervalNames (List.range 0 12) gammaKeyMap
 
 
+questionToString : Question -> String
+questionToString q =
+    case q.qType of
+        Degree ->
+            Music.syllable q.answer
+
+        IntervalName ->
+            Maybe.withDefault "" (Utils.get q.answer Music.intervalNames)
+
+
 getOptionsFromModel : Model -> List AnswerOption
 getOptionsFromModel m =
-    let
-        get n =
-            Utils.get n m.questions
-                |> Maybe.map .qType
-                |> Maybe.map (getOptions m.settings.mode)
-
-        current =
-            get m.guessed
-    in
-        case current of
-            Just _ ->
-                current |> Maybe.withDefault []
-
-            Nothing ->
-                get (m.guessed - 1) |> Maybe.withDefault []
+    m.currentQuestion
+        |> Maybe.map .qType
+        |> Maybe.map (getOptions m.settings.mode)
+        |> Maybe.withDefault []
 
 
-getQuestions : Bool -> List Chord -> List Question
-getQuestions guessChordName chords =
+getQuestion : Model -> Maybe Question
+getQuestion m =
     let
         name chord =
             case chord of
@@ -124,24 +123,57 @@ getQuestions guessChordName chords =
                 _ ->
                     { qType = IntervalName, answer = 0 }
 
-        fromChord chord =
-            List.map (\n -> { qType = Degree, answer = (n % 12) }) chord
-                ++ if guessChordName then
-                    [ name chord ]
-                   else
-                    []
+        degree n =
+            { qType = Degree, answer = (n % 12) }
+
+        currentChord =
+            Utils.get m.guessed.chords m.chordsToGuess
+
+        question chord =
+            case (Utils.get m.guessed.notes chord) of
+                Just note ->
+                    degree note
+
+                Nothing ->
+                    name chord
     in
-        List.map fromChord chords
-            |> List.concat
+        currentChord
+            |> Maybe.map question
+            |> (\q ->
+                    if q == Nothing then
+                        m.currentQuestion
+                    else
+                        q
+               )
+
+
+nextQuestion : Model -> Model
+nextQuestion m =
+    let
+        g =
+            m.guessed
+
+        newGuessed =
+            if g.notes < m.settings.chordSize - 1 then
+                { g | notes = g.notes + 1 }
+            else if m.settings.guessChordName && g.notes == m.settings.chordSize - 1 then
+                { g | notes = g.notes + 1 }
+            else
+                { g | notes = 0, chords = g.chords + 1 }
+
+        newModel =
+            { m | guessed = newGuessed, attemps = Set.empty }
+    in
+        { newModel | currentQuestion = getQuestion newModel }
 
 
 type alias Model =
     { stat : Statistics
     , settings : Settings
     , chordsToGuess : List Chord
-    , questions : List Question
+    , currentQuestion : Maybe Question
     , error : Bool
-    , guessed : Int
+    , guessed : { chords : Int, notes : Int }
     , attemps : Set Int
     , page : Page
     }
@@ -158,9 +190,9 @@ initModel =
     { stat = initStatistics
     , settings = initSettings
     , chordsToGuess = []
-    , questions = []
+    , currentQuestion = Nothing
     , error = False
-    , guessed = 0
+    , guessed = { chords = 0, notes = 0 }
     , attemps = Set.empty
     , page = MainPage
     }
@@ -168,4 +200,4 @@ initModel =
 
 allGuessed : Model -> Bool
 allGuessed model =
-    model.guessed == List.length model.questions
+    model.guessed.chords == List.length model.chordsToGuess

@@ -6,7 +6,6 @@ import Html.Events exposing (onClick)
 import Set exposing (Set)
 import Music exposing (Chord, Note, Mode(..))
 import Types exposing (Msg(..), Model, Page(..), allGuessed)
-import Utils
 
 
 nav : Html Msg
@@ -49,8 +48,8 @@ answerButton m answerOption =
         attemted =
             Set.member answerOption.index m.attemps
 
-        isLastRightAnswer =
-            Utils.get (m.guessed - 1) m.questions
+        isRightAnswer =
+            m.currentQuestion
                 |> Maybe.map (\q -> q.answer == answerOption.index)
                 |> Maybe.withDefault False
     in
@@ -61,7 +60,7 @@ answerButton m answerOption =
                 , ( "is-danger", attemted )
                 , ( "is-info", not attemted )
                 , ( "is-success"
-                  , (m.guessed == List.length m.questions) && (m.guessed > 0) && isLastRightAnswer
+                  , (allGuessed m) && isRightAnswer
                   )
                 ]
             , onClick (MakeGuess answerOption.index)
@@ -76,18 +75,27 @@ answerButtons m =
 
 answerLine : Model -> List (Html Msg)
 answerLine m =
-    Utils.get 0 m.chordsToGuess
-        |> Maybe.withDefault []
-        |> List.take m.guessed
-        |> List.map Music.syllable
-        |> flip (++)
-            (if allGuessed m then
-                []
-             else
-                [ "?" ]
-            )
-        |> List.map (\s -> span [ class "is-large label" ] [ text s ])
-        |> List.reverse
+    let
+        noteCell chordIndex noteIndex note =
+            if
+                (chordIndex < m.guessed.chords)
+                    || (chordIndex == m.guessed.chords && noteIndex < m.guessed.notes)
+            then
+                Music.syllable note
+            else if chordIndex == m.guessed.chords && noteIndex == m.guessed.notes then
+                " ? "
+            else
+                ""
+
+        chordColumn chordIndex chord =
+            chord
+                |> List.indexedMap (noteCell chordIndex)
+                |> List.map (\s -> span [ class "is-large label" ] [ text s ])
+                |> List.reverse
+    in
+        m.chordsToGuess
+            |> List.indexedMap chordColumn
+            |> List.map (div [ class "answer-chord-column" ])
 
 
 quiz : Model -> List (Html Msg)
