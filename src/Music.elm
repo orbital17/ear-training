@@ -89,6 +89,17 @@ tonicOctave =
     [ [ 0, 12 ] ]
 
 
+transpose : Int -> Chord -> Chord
+transpose n =
+    List.map ((+) n)
+
+
+toMelodic : List Chord -> List Chord
+toMelodic chords =
+    List.concat chords
+        |> List.map (\n -> [ n ])
+
+
 intervalNames : List String
 intervalNames =
     [ "Unison", "Minor 2nd", "Major 2nd", "Minor 3rd", "Major 3rd", "Perfect 4th", "Tritone", "Perfect 5th", "Minor 6th", "Major 6th", "Minor 7th", "Major 7th", "Octave" ]
@@ -98,6 +109,48 @@ intervalName : Int -> String
 intervalName i =
     Utils.get i intervalNames
         |> Maybe.withDefault "Unknown interval"
+
+
+intervalsOptions : List Note -> List Chord
+intervalsOptions scale =
+    List.concatMap
+        (\root ->
+            List.map
+                (\top -> ( root, top ))
+                (scale ++ List.map ((+) 12) scale)
+        )
+        scale
+        |> List.filter (\( root, top ) -> root < top && (top - root) <= 12)
+        |> List.map (\( root, top ) -> [ root, top ])
+
+
+triadNames : List String
+triadNames =
+    [ "maj", "min", "aug", "dim", "maj6", "min6" ]
+
+
+triadMasks : List ( Int, Int )
+triadMasks =
+    [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ) ]
+
+
+triadOptions : List Note -> List Chord
+triadOptions scale =
+    let
+        extendedScale =
+            scale ++ List.map ((+) 12) scale
+
+        makeTriad note ( a, b ) =
+            [ note, note + a, note + a + b ]
+
+        inScale chord =
+            List.all (flip List.member extendedScale) chord
+
+        chordsFromNote n =
+            List.map (makeTriad n) triadMasks
+                |> List.filter inScale
+    in
+        List.concatMap chordsFromNote scale
 
 
 chordName : Chord -> String
@@ -114,30 +167,6 @@ chordName c =
             "_"
 
 
-transpose : Int -> Chord -> Chord
-transpose n =
-    List.map ((+) n)
-
-
-toMelodic : List Chord -> List Chord
-toMelodic chords =
-    List.concat chords
-        |> List.map (\n -> [ n ])
-
-
-intervalsOptions : List Note -> List Chord
-intervalsOptions scale =
-    List.concatMap
-        (\root ->
-            List.map
-                (\top -> ( root, top ))
-                (scale ++ List.map ((+) 12) scale)
-        )
-        scale
-        |> List.filter (\( root, top ) -> root < top && (top - root) <= 12)
-        |> List.map (\( root, top ) -> [ root, top ])
-
-
 getRandom : Mode -> Int -> Generator Chord
 getRandom mode chordSize =
     let
@@ -148,6 +177,9 @@ getRandom mode chordSize =
 
                 2 ->
                     intervalsOptions <| modeNotes mode
+
+                3 ->
+                    triadOptions <| modeNotes mode
 
                 _ ->
                     []

@@ -34,8 +34,8 @@ initSettings =
     , mode = Music.Major
     , guessChordName = False
     , autoProceed = False
-    , chordSize = 2
-    , chordsInSequence = 2
+    , chordSize = 3
+    , chordsInSequence = 1
     , delay = 1
     }
 
@@ -151,13 +151,18 @@ getQuestion m =
 nextQuestion : Model -> Model
 nextQuestion m =
     let
+        currentChordSize =
+            Utils.get m.guessed.chords m.chordsToGuess
+                |> Maybe.withDefault []
+                |> List.length
+
         g =
             m.guessed
 
         newGuessed =
-            if g.notes < m.settings.chordSize - 1 then
+            if g.notes < currentChordSize - 1 then
                 { g | notes = g.notes + 1 }
-            else if m.settings.guessChordName && g.notes == m.settings.chordSize - 1 then
+            else if m.settings.guessChordName && g.notes == currentChordSize - 1 then
                 { g | notes = g.notes + 1 }
             else
                 { g | notes = 0, chords = g.chords + 1 }
