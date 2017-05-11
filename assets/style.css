@@ -23,6 +23,12 @@
 
 .settings-field .field, .settings-field p {
   display: inline-block;
+  vertical-align: middle;
+}
+
+.settings-field span {
+  font-size: 16pt;
+  margin: 6px;
 }
 
 

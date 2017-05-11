@@ -33,9 +33,24 @@ modeNotes mode =
 
 syllable : Note -> String
 syllable n =
-    [ "do", "re♭", "re", "mi♭", "mi", "fa", "sol♭", "sol", "la♭", "la", "si♭", "si" ]
+    [ "do", "re♭", "re", "mi♭", "mi", "fa", "sol♭", "sol", "la♭", "la", "ti♭", "ti" ]
         |> Utils.get (n % 12)
         |> Maybe.withDefault "_"
+
+
+noteToString : Int -> String
+noteToString n =
+    let
+        notes =
+            [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ]
+
+        letter =
+            Maybe.withDefault "_" (Utils.get (n % 12) notes)
+
+        octave =
+            n // 12 - 1
+    in
+        letter ++ (toString octave)
 
 
 getNote : Mode -> Degree -> Note

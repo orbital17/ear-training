@@ -185,11 +185,19 @@ settingsView m =
                 , b (ChangeSettings (\s -> { s | chordSize = 2 })) "2" (m.settings.chordSize == 2)
                 ]
         , settingField "Chords number" <|
-            div [ class "field has-addons" ]
-                [ b (ChangeSettings (\s -> { s | chordsInSequence = 1 })) "1" (m.settings.chordsInSequence == 1)
-                , b (ChangeSettings (\s -> { s | chordsInSequence = 2 })) "2" (m.settings.chordsInSequence == 2)
-                , b (ChangeSettings (\s -> { s | chordsInSequence = 3 })) "3" (m.settings.chordsInSequence == 3)
-                , b (ChangeSettings (\s -> { s | chordsInSequence = 4 })) "4" (m.settings.chordsInSequence == 4)
+            div [ class "field has-addons" ] <|
+                List.map
+                    (\i ->
+                        b (ChangeSettings (\s -> { s | chordsInSequence = i }))
+                            (toString i)
+                            (m.settings.chordsInSequence == i)
+                    )
+                    (List.range 1 4)
+        , settingField "Root note" <|
+            div [ class "field" ]
+                [ b (ChangeSettings (\s -> { s | root = s.root - 1 })) "-" False
+                , span [ class "" ] [ text (Music.noteToString m.settings.root) ]
+                , b (ChangeSettings (\s -> { s | root = s.root + 1 })) "+" False
                 ]
         ]
 
