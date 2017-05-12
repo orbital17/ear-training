@@ -6,8 +6,9 @@ import Keyboard
 import Random
 import Set exposing (Set)
 import Music exposing (Chord, Note)
-import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics)
+import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics, Settings)
 import View exposing (view)
+import Storage
 
 
 main : Program Never Model Msg
@@ -15,7 +16,7 @@ main =
     Html.program
         --{ init = (update StartExercises initModel)
         --{ init = ({ initModel | page = SettingsPage } ! [])
-        { init = (initModel ! [])
+        { init = (initModel ! [ Storage.localStorageGet () ])
         , view = view
         , update = debugUpdate
         , subscriptions = subscriptions
@@ -138,7 +139,11 @@ update msg model =
             getNewExercise { model | page = ExercisePage }
 
         ChangeSettings f ->
-            { model | settings = f model.settings } ! []
+            let
+                newSettings =
+                    f model.settings
+            in
+                { model | settings = newSettings } ! [ Storage.setSettings newSettings ]
 
         MoveToPage page ->
             { model | page = page } ! []
@@ -173,4 +178,15 @@ keyboardMap model key =
 
 subscriptions : Model -> Sub Msg
 subscriptions m =
-    Keyboard.presses <| keyboardMap m << Char.fromCode
+    Sub.batch
+        [ Keyboard.presses <| keyboardMap m << Char.fromCode
+        , Storage.settingsSub
+            (\maybeSettings ->
+                case maybeSettings of
+                    Just settings ->
+                        ChangeSettings (\_ -> settings)
+
+                    Nothing ->
+                        NoOp
+            )
+        ]

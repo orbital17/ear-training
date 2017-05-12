@@ -17,7 +17,16 @@
 <script type="text/javascript">
 
   let app = Elm.Main.fullscreen();
+
   app.ports.playChordsPort.subscribe(playChords);
+
+  app.ports.localStorageSet.subscribe(function(str) {
+    localStorage.setItem("elmStorage", str);
+  })
+
+  app.ports.localStorageGet.subscribe(function() {
+    app.ports.localStorageSub.send(String(localStorage.getItem("elmStorage")))
+  })
 
 </script>
 

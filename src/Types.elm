@@ -34,7 +34,7 @@ initSettings =
     , mode = Music.Major
     , guessChordName = True
     , autoProceed = False
-    , chordSize = 3
+    , chordSize = 2
     , chordsInSequence = 1
     , delay = 1
     }
