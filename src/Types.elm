@@ -13,7 +13,7 @@ type Msg
     | Exercise (List Chord)
     | MakeGuess Note
     | StartExercises
-    | ChangeSettings (Settings -> Settings)
+    | ChangeSettings Settings
     | MoveToPage Page
 
 

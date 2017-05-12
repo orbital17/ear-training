@@ -157,48 +157,47 @@ settingsView m =
 
         settingField title inputs =
             div [ class "settings-field" ] [ div [ class "setting-label" ] [ text title ], inputs ]
+
+        s =
+            m.settings
     in
         [ settingField "Scale" <|
             div [ class "field has-addons" ]
-                [ b (ChangeSettings (\s -> { s | mode = Major })) "Major" (m.settings.mode == Major)
-                , b (ChangeSettings (\s -> { s | mode = Minor })) "Minor" (m.settings.mode == Minor)
+                [ b (ChangeSettings { s | mode = Major }) "Major" (s.mode == Major)
+                , b (ChangeSettings { s | mode = Minor }) "Minor" (s.mode == Minor)
                 ]
         , settingField "Auto proceed" <|
             div [ class "field" ]
-                [ switch (ChangeSettings (\s -> { s | autoProceed = not s.autoProceed }))
-                    m.settings.autoProceed
-                ]
+                [ switch (ChangeSettings { s | autoProceed = not s.autoProceed }) s.autoProceed ]
         , settingField "Name guess" <|
             div [ class "field has-addons" ]
-                [ switch (ChangeSettings (\s -> { s | guessChordName = not s.guessChordName }))
-                    m.settings.guessChordName
-                ]
+                [ switch (ChangeSettings { s | guessChordName = not s.guessChordName }) s.guessChordName ]
         , settingField "Delay" <|
             div [ class "field has-addons" ]
-                [ b (ChangeSettings (\s -> { s | delay = 0.4 })) "0.4" (m.settings.delay == 0.4)
-                , b (ChangeSettings (\s -> { s | delay = 0.7 })) "0.7" (m.settings.delay == 0.7)
-                , b (ChangeSettings (\s -> { s | delay = 1 })) "1" (m.settings.delay == 1)
+                [ b (ChangeSettings { s | delay = 0.4 }) "0.4" (s.delay == 0.4)
+                , b (ChangeSettings { s | delay = 0.7 }) "0.7" (s.delay == 0.7)
+                , b (ChangeSettings { s | delay = 1 }) "1" (s.delay == 1)
                 ]
         , settingField "Notes in chord" <|
             div [ class "field has-addons" ]
-                [ b (ChangeSettings (\s -> { s | chordSize = 1 })) "1" (m.settings.chordSize == 1)
-                , b (ChangeSettings (\s -> { s | chordSize = 2 })) "2" (m.settings.chordSize == 2)
-                , b (ChangeSettings (\s -> { s | chordSize = 3 })) "3" (m.settings.chordSize == 3)
+                [ b (ChangeSettings { s | chordSize = 1 }) "1" (s.chordSize == 1)
+                , b (ChangeSettings { s | chordSize = 2 }) "2" (s.chordSize == 2)
+                , b (ChangeSettings { s | chordSize = 3 }) "3" (s.chordSize == 3)
                 ]
         , settingField "Chords number" <|
             div [ class "field has-addons" ] <|
                 List.map
                     (\i ->
-                        b (ChangeSettings (\s -> { s | chordsInSequence = i }))
+                        b (ChangeSettings { s | chordsInSequence = i })
                             (toString i)
-                            (m.settings.chordsInSequence == i)
+                            (s.chordsInSequence == i)
                     )
                     (List.range 1 4)
         , settingField "Root note" <|
             div [ class "field" ]
-                [ b (ChangeSettings (\s -> { s | root = s.root - 1 })) "-" False
-                , span [ class "" ] [ text (Music.noteToString m.settings.root) ]
-                , b (ChangeSettings (\s -> { s | root = s.root + 1 })) "+" False
+                [ b (ChangeSettings { s | root = s.root - 1 }) "-" False
+                , span [ class "" ] [ text (Music.noteToString s.root) ]
+                , b (ChangeSettings { s | root = s.root + 1 }) "+" False
                 ]
         ]
 

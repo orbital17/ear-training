@@ -138,12 +138,8 @@ update msg model =
         StartExercises ->
             getNewExercise { model | page = ExercisePage }
 
-        ChangeSettings f ->
-            let
-                newSettings =
-                    f model.settings
-            in
-                { model | settings = newSettings } ! [ Storage.setSettings newSettings ]
+        ChangeSettings newSettings ->
+            { model | settings = newSettings } ! [ Storage.setSettings newSettings ]
 
         MoveToPage page ->
             { model | page = page } ! []
@@ -180,13 +176,5 @@ subscriptions : Model -> Sub Msg
 subscriptions m =
     Sub.batch
         [ Keyboard.presses <| keyboardMap m << Char.fromCode
-        , Storage.settingsSub
-            (\maybeSettings ->
-                case maybeSettings of
-                    Just settings ->
-                        ChangeSettings (\_ -> settings)
-
-                    Nothing ->
-                        NoOp
-            )
+        , Storage.settingsSub <| Maybe.withDefault NoOp << Maybe.map ChangeSettings
         ]
