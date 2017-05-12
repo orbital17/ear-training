@@ -4,7 +4,7 @@ const ac = new AudioContext();
 let instrument;
 let timerId;
 
-Soundfont.instrument(ac, '/assets/acoustic_grand_piano-ogg.js').then(function (i) {
+Soundfont.instrument(ac, 'assets/acoustic_grand_piano-ogg.js').then(function (i) {
   instrument = i;
 })
 
