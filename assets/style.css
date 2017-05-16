@@ -116,6 +116,7 @@ html, body {
   flex-wrap: wrap;
   justify-content: center;
   align-content: center;
+  align-items: center;
 }
 
 .exercise-screen .buttons-panel button {
