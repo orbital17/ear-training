@@ -139,7 +139,14 @@ update msg model =
             getNewExercise { model | page = ExercisePage }
 
         ChangeSettings newSettings ->
-            { model | settings = newSettings } ! [ Storage.setSettings newSettings ]
+            let
+                newSettings1 =
+                    if newSettings.chordSize < 2 then
+                        { newSettings | guessChordName = False }
+                    else
+                        newSettings
+            in
+                { model | settings = newSettings1 } ! [ Storage.setSettings newSettings ]
 
         MoveToPage page ->
             { model | page = page } ! []

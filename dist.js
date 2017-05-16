@@ -10283,7 +10283,7 @@ var _user$project$Types$getOptionsFromModel = function (m) {
 				m.currentQuestion)));
 };
 var _user$project$Types$initStatistics = {total: 0, correct: 0};
-var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: true, autoProceed: false, chordSize: 2, chordsInSequence: 1, delay: 1};
+var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: false, autoProceed: false, chordSize: 1, chordsInSequence: 1, delay: 1};
 var _user$project$Types$Settings = F7(
 	function (a, b, c, d, e, f, g) {
 		return {root: a, mode: b, guessChordName: c, autoProceed: d, chordSize: e, chordsInSequence: f, delay: g};
@@ -10413,6 +10413,7 @@ var _user$project$Types$initModel = {
 };
 
 var _user$project$View$settingsView = function (m) {
+	var s = m.settings;
 	var settingField = F2(
 		function (title, inputs) {
 			return A2(
@@ -10438,7 +10439,10 @@ var _user$project$View$settingsView = function (m) {
 						}),
 					_1: {
 						ctor: '::',
-						_0: inputs,
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{ctor: '[]'},
+							inputs),
 						_1: {ctor: '[]'}
 					}
 				});
@@ -10490,39 +10494,28 @@ var _user$project$View$settingsView = function (m) {
 	var b = F3(
 		function (msg, title, isSelected) {
 			return A2(
-				_elm_lang$html$Html$p,
+				_elm_lang$html$Html$button,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('control'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'pure-button is-info', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'is-outlined', _1: !isSelected},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(msg),
+						_1: {ctor: '[]'}
+					}
 				},
 				{
 					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$button,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$classList(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'button is-info', _1: true},
-									_1: {
-										ctor: '::',
-										_0: {ctor: '_Tuple2', _0: 'is-outlined', _1: !isSelected},
-										_1: {ctor: '[]'}
-									}
-								}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(msg),
-								_1: {ctor: '[]'}
-							}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(title),
-							_1: {ctor: '[]'}
-						}),
+					_0: _elm_lang$html$Html$text(title),
 					_1: {ctor: '[]'}
 				});
 		});
@@ -10531,276 +10524,201 @@ var _user$project$View$settingsView = function (m) {
 		_0: A2(
 			settingField,
 			'Scale',
-			A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('field has-addons'),
-					_1: {ctor: '[]'}
-				},
-				{
+			{
+				ctor: '::',
+				_0: A3(
+					b,
+					_user$project$Types$ChangeSettings(
+						_elm_lang$core$Native_Utils.update(
+							s,
+							{mode: _user$project$Music$Major})),
+					'Major',
+					_elm_lang$core$Native_Utils.eq(s.mode, _user$project$Music$Major)),
+				_1: {
 					ctor: '::',
 					_0: A3(
 						b,
 						_user$project$Types$ChangeSettings(
-							function (s) {
-								return _elm_lang$core$Native_Utils.update(
-									s,
-									{mode: _user$project$Music$Major});
-							}),
-						'Major',
-						_elm_lang$core$Native_Utils.eq(m.settings.mode, _user$project$Music$Major)),
-					_1: {
-						ctor: '::',
-						_0: A3(
-							b,
-							_user$project$Types$ChangeSettings(
-								function (s) {
-									return _elm_lang$core$Native_Utils.update(
-										s,
-										{mode: _user$project$Music$Minor});
-								}),
-							'Minor',
-							_elm_lang$core$Native_Utils.eq(m.settings.mode, _user$project$Music$Minor)),
-						_1: {ctor: '[]'}
-					}
-				})),
+							_elm_lang$core$Native_Utils.update(
+								s,
+								{mode: _user$project$Music$Minor})),
+						'Minor',
+						_elm_lang$core$Native_Utils.eq(s.mode, _user$project$Music$Minor)),
+					_1: {ctor: '[]'}
+				}
+			}),
 		_1: {
 			ctor: '::',
 			_0: A2(
 				settingField,
 				'Auto proceed',
-				A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('field'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							$switch,
-							_user$project$Types$ChangeSettings(
-								function (s) {
-									return _elm_lang$core$Native_Utils.update(
-										s,
-										{autoProceed: !s.autoProceed});
-								}),
-							m.settings.autoProceed),
-						_1: {ctor: '[]'}
-					})),
+				{
+					ctor: '::',
+					_0: A2(
+						$switch,
+						_user$project$Types$ChangeSettings(
+							_elm_lang$core$Native_Utils.update(
+								s,
+								{autoProceed: !s.autoProceed})),
+						s.autoProceed),
+					_1: {ctor: '[]'}
+				}),
 			_1: {
 				ctor: '::',
 				_0: A2(
 					settingField,
 					'Name guess',
-					A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('field has-addons'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								$switch,
-								_user$project$Types$ChangeSettings(
-									function (s) {
-										return _elm_lang$core$Native_Utils.update(
-											s,
-											{guessChordName: !s.guessChordName});
-									}),
-								m.settings.guessChordName),
-							_1: {ctor: '[]'}
-						})),
+					{
+						ctor: '::',
+						_0: A2(
+							$switch,
+							_user$project$Types$ChangeSettings(
+								_elm_lang$core$Native_Utils.update(
+									s,
+									{guessChordName: !s.guessChordName})),
+							s.guessChordName),
+						_1: {ctor: '[]'}
+					}),
 				_1: {
 					ctor: '::',
 					_0: A2(
 						settingField,
 						'Delay',
-						A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('field has-addons'),
-								_1: {ctor: '[]'}
-							},
-							{
+						{
+							ctor: '::',
+							_0: A3(
+								b,
+								_user$project$Types$ChangeSettings(
+									_elm_lang$core$Native_Utils.update(
+										s,
+										{delay: 0.4})),
+								'0.4',
+								_elm_lang$core$Native_Utils.eq(s.delay, 0.4)),
+							_1: {
 								ctor: '::',
 								_0: A3(
 									b,
 									_user$project$Types$ChangeSettings(
-										function (s) {
-											return _elm_lang$core$Native_Utils.update(
-												s,
-												{delay: 0.4});
-										}),
-									'0.4',
-									_elm_lang$core$Native_Utils.eq(m.settings.delay, 0.4)),
+										_elm_lang$core$Native_Utils.update(
+											s,
+											{delay: 0.7})),
+									'0.7',
+									_elm_lang$core$Native_Utils.eq(s.delay, 0.7)),
 								_1: {
 									ctor: '::',
 									_0: A3(
 										b,
 										_user$project$Types$ChangeSettings(
-											function (s) {
-												return _elm_lang$core$Native_Utils.update(
-													s,
-													{delay: 0.7});
-											}),
-										'0.7',
-										_elm_lang$core$Native_Utils.eq(m.settings.delay, 0.7)),
-									_1: {
-										ctor: '::',
-										_0: A3(
-											b,
-											_user$project$Types$ChangeSettings(
-												function (s) {
-													return _elm_lang$core$Native_Utils.update(
-														s,
-														{delay: 1});
-												}),
-											'1',
-											_elm_lang$core$Native_Utils.eq(m.settings.delay, 1)),
-										_1: {ctor: '[]'}
-									}
+											_elm_lang$core$Native_Utils.update(
+												s,
+												{delay: 1})),
+										'1',
+										_elm_lang$core$Native_Utils.eq(s.delay, 1)),
+									_1: {ctor: '[]'}
 								}
-							})),
+							}
+						}),
 					_1: {
 						ctor: '::',
 						_0: A2(
 							settingField,
 							'Notes in chord',
-							A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('field has-addons'),
-									_1: {ctor: '[]'}
-								},
-								{
+							{
+								ctor: '::',
+								_0: A3(
+									b,
+									_user$project$Types$ChangeSettings(
+										_elm_lang$core$Native_Utils.update(
+											s,
+											{chordSize: 1})),
+									'1',
+									_elm_lang$core$Native_Utils.eq(s.chordSize, 1)),
+								_1: {
 									ctor: '::',
 									_0: A3(
 										b,
 										_user$project$Types$ChangeSettings(
-											function (s) {
-												return _elm_lang$core$Native_Utils.update(
-													s,
-													{chordSize: 1});
-											}),
-										'1',
-										_elm_lang$core$Native_Utils.eq(m.settings.chordSize, 1)),
+											_elm_lang$core$Native_Utils.update(
+												s,
+												{chordSize: 2})),
+										'2',
+										_elm_lang$core$Native_Utils.eq(s.chordSize, 2)),
 									_1: {
 										ctor: '::',
 										_0: A3(
 											b,
 											_user$project$Types$ChangeSettings(
-												function (s) {
-													return _elm_lang$core$Native_Utils.update(
-														s,
-														{chordSize: 2});
-												}),
-											'2',
-											_elm_lang$core$Native_Utils.eq(m.settings.chordSize, 2)),
-										_1: {
-											ctor: '::',
-											_0: A3(
-												b,
-												_user$project$Types$ChangeSettings(
-													function (s) {
-														return _elm_lang$core$Native_Utils.update(
-															s,
-															{chordSize: 3});
-													}),
-												'3',
-												_elm_lang$core$Native_Utils.eq(m.settings.chordSize, 3)),
-											_1: {ctor: '[]'}
-										}
+												_elm_lang$core$Native_Utils.update(
+													s,
+													{chordSize: 3})),
+											'3',
+											_elm_lang$core$Native_Utils.eq(s.chordSize, 3)),
+										_1: {ctor: '[]'}
 									}
-								})),
+								}
+							}),
 						_1: {
 							ctor: '::',
 							_0: A2(
 								settingField,
 								'Chords number',
 								A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('field has-addons'),
-										_1: {ctor: '[]'}
+									_elm_lang$core$List$map,
+									function (i) {
+										return A3(
+											b,
+											_user$project$Types$ChangeSettings(
+												_elm_lang$core$Native_Utils.update(
+													s,
+													{chordsInSequence: i})),
+											_elm_lang$core$Basics$toString(i),
+											_elm_lang$core$Native_Utils.eq(s.chordsInSequence, i));
 									},
-									A2(
-										_elm_lang$core$List$map,
-										function (i) {
-											return A3(
-												b,
-												_user$project$Types$ChangeSettings(
-													function (s) {
-														return _elm_lang$core$Native_Utils.update(
-															s,
-															{chordsInSequence: i});
-													}),
-												_elm_lang$core$Basics$toString(i),
-												_elm_lang$core$Native_Utils.eq(m.settings.chordsInSequence, i));
-										},
-										A2(_elm_lang$core$List$range, 1, 4)))),
+									A2(_elm_lang$core$List$range, 1, 4))),
 							_1: {
 								ctor: '::',
 								_0: A2(
 									settingField,
 									'Root note',
-									A2(
-										_elm_lang$html$Html$div,
-										{
+									{
+										ctor: '::',
+										_0: A3(
+											b,
+											_user$project$Types$ChangeSettings(
+												_elm_lang$core$Native_Utils.update(
+													s,
+													{root: s.root - 1})),
+											'-',
+											false),
+										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('field'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A3(
-												b,
-												_user$project$Types$ChangeSettings(
-													function (s) {
-														return _elm_lang$core$Native_Utils.update(
-															s,
-															{root: s.root - 1});
-													}),
-												'-',
-												false),
+											_0: A2(
+												_elm_lang$html$Html$span,
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$class('root-note'),
+													_1: {ctor: '[]'}
+												},
+												{
+													ctor: '::',
+													_0: _elm_lang$html$Html$text(
+														_user$project$Music$noteToString(s.root)),
+													_1: {ctor: '[]'}
+												}),
 											_1: {
 												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$span,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class(''),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html$text(
-															_user$project$Music$noteToString(m.settings.root)),
-														_1: {ctor: '[]'}
-													}),
-												_1: {
-													ctor: '::',
-													_0: A3(
-														b,
-														_user$project$Types$ChangeSettings(
-															function (s) {
-																return _elm_lang$core$Native_Utils.update(
-																	s,
-																	{root: s.root + 1});
-															}),
-														'+',
-														false),
-													_1: {ctor: '[]'}
-												}
+												_0: A3(
+													b,
+													_user$project$Types$ChangeSettings(
+														_elm_lang$core$Native_Utils.update(
+															s,
+															{root: s.root + 1})),
+													'+',
+													false),
+												_1: {ctor: '[]'}
 											}
-										})),
+										}
+									}),
 								_1: {ctor: '[]'}
 							}
 						}
@@ -10815,43 +10733,38 @@ var _user$project$View$answerLine = function (m) {
 		function (chordIndex, chord) {
 			return (_elm_lang$core$Native_Utils.cmp(chordIndex, m.guessed.chords) < 0) ? _user$project$Music$chordName(chord) : ((_elm_lang$core$Native_Utils.eq(chordIndex, m.guessed.chords) && _elm_lang$core$Native_Utils.eq(
 				_elm_lang$core$List$length(chord),
-				m.guessed.notes)) ? ' ? ' : '');
+				m.guessed.notes)) ? ' ? ' : ' · ');
 		});
 	var noteCell = F3(
 		function (chordIndex, noteIndex, note) {
-			return ((_elm_lang$core$Native_Utils.cmp(chordIndex, m.guessed.chords) < 0) || (_elm_lang$core$Native_Utils.eq(chordIndex, m.guessed.chords) && (_elm_lang$core$Native_Utils.cmp(noteIndex, m.guessed.notes) < 0))) ? _user$project$Music$syllable(note) : ((_elm_lang$core$Native_Utils.eq(chordIndex, m.guessed.chords) && _elm_lang$core$Native_Utils.eq(noteIndex, m.guessed.notes)) ? ' ? ' : '');
+			return ((_elm_lang$core$Native_Utils.cmp(chordIndex, m.guessed.chords) < 0) || (_elm_lang$core$Native_Utils.eq(chordIndex, m.guessed.chords) && (_elm_lang$core$Native_Utils.cmp(noteIndex, m.guessed.notes) < 0))) ? _user$project$Music$syllable(note) : ((_elm_lang$core$Native_Utils.eq(chordIndex, m.guessed.chords) && _elm_lang$core$Native_Utils.eq(noteIndex, m.guessed.notes)) ? ' ? ' : ' · ');
 		});
 	var chordColumn = F2(
 		function (chordIndex, chord) {
-			return _elm_lang$core$List$reverse(
-				A2(
-					_elm_lang$core$List$map,
-					function (s) {
-						return A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('is-large label'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(s),
-								_1: {ctor: '[]'}
-							});
-					},
-					A3(
-						_elm_lang$core$Basics$flip,
-						_elm_lang$core$List$append,
-						m.settings.guessChordName ? {
+			return A2(
+				_elm_lang$core$List$map,
+				function (s) {
+					return A2(
+						_elm_lang$html$Html$span,
+						{ctor: '[]'},
+						{
 							ctor: '::',
-							_0: A2(chordNameCell, chordIndex, chord),
+							_0: _elm_lang$html$Html$text(s),
 							_1: {ctor: '[]'}
-						} : {ctor: '[]'},
-						A2(
-							_elm_lang$core$List$indexedMap,
-							noteCell(chordIndex),
-							chord))));
+						});
+				},
+				A3(
+					_elm_lang$core$Basics$flip,
+					_elm_lang$core$List$append,
+					m.settings.guessChordName ? {
+						ctor: '::',
+						_0: A2(chordNameCell, chordIndex, chord),
+						_1: {ctor: '[]'}
+					} : {ctor: '[]'},
+					A2(
+						_elm_lang$core$List$indexedMap,
+						noteCell(chordIndex),
+						chord)));
 		});
 	return A2(
 		_elm_lang$core$List$map,
@@ -10882,7 +10795,7 @@ var _user$project$View$answerButton = F2(
 				_0: _elm_lang$html$Html_Attributes$classList(
 					{
 						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'button', _1: true},
+						_0: {ctor: '_Tuple2', _0: 'pure-button', _1: true},
 						_1: {
 							ctor: '::',
 							_0: {ctor: '_Tuple2', _0: 'answer-button', _1: true},
@@ -10914,18 +10827,37 @@ var _user$project$View$answerButton = F2(
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						answerOption.name,
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							' [',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								_elm_lang$core$String$fromChar(answerOption.keyMap),
-								']')))),
-				_1: {ctor: '[]'}
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(answerOption.name),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('key-binding'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									'[',
+									A2(
+										_elm_lang$core$Basics_ops['++'],
+										_elm_lang$core$String$fromChar(answerOption.keyMap),
+										']'))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$View$answerButtons = function (m) {
@@ -10941,7 +10873,7 @@ var _user$project$View$quiz = function (m) {
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('block'),
+				_0: _elm_lang$html$Html_Attributes$class('statistics-line'),
 				_1: {ctor: '[]'}
 			},
 			{
@@ -10965,7 +10897,7 @@ var _user$project$View$quiz = function (m) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('block'),
+					_0: _elm_lang$html$Html_Attributes$class('answer-buttons'),
 					_1: {ctor: '[]'}
 				},
 				_user$project$View$answerButtons(m)),
@@ -10975,7 +10907,7 @@ var _user$project$View$quiz = function (m) {
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('block'),
+						_0: _elm_lang$html$Html_Attributes$class('answer-line'),
 						_1: {ctor: '[]'}
 					},
 					_user$project$View$answerLine(m)),
@@ -10984,63 +10916,69 @@ var _user$project$View$quiz = function (m) {
 		}
 	};
 };
-var _user$project$View$rightPanelButton = F3(
-	function (msg, title, isDisabled) {
+var _user$project$View$rightPanelButton = F4(
+	function (msg, title, keyBinding, isDisabled) {
 		return A2(
-			_elm_lang$html$Html$p,
+			_elm_lang$html$Html$button,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('field'),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$html$Html_Attributes$class('pure-button is-info is-outlined'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(msg),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$disabled(isDisabled),
+						_1: {ctor: '[]'}
+					}
+				}
 			},
 			{
 				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$button,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('button is-info is-outlined'),
-						_1: {
+				_0: _elm_lang$html$Html$text(title),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(msg),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$disabled(isDisabled),
-								_1: {ctor: '[]'}
-							}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text(title),
-						_1: {ctor: '[]'}
-					}),
-				_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$class('key-binding'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(keyBinding),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
 			});
 	});
 var _user$project$View$rightPanelButtons = function (m) {
 	var b = _user$project$View$rightPanelButton;
 	return {
 		ctor: '::',
-		_0: A3(
+		_0: A4(
 			b,
 			A2(
 				_user$project$Types$PlayCustomDelay,
 				0.5,
 				_user$project$Music$getCadence(m.settings.mode)),
 			'Hear cadence',
+			'',
 			false),
 		_1: {
 			ctor: '::',
-			_0: A3(
+			_0: A4(
 				b,
 				_user$project$Types$Play(
 					_user$project$Music$toMelodic(m.chordsToGuess)),
 				'Hear sequentially',
+				'',
 				false),
 			_1: {
 				ctor: '::',
-				_0: A3(
+				_0: A4(
 					b,
 					_user$project$Types$Play(
 						{
@@ -11056,28 +10994,32 @@ var _user$project$View$rightPanelButtons = function (m) {
 							},
 							_1: {ctor: '[]'}
 						}),
-					'Hear tonic [c]',
+					'Hear tonic',
+					'[c]',
 					false),
 				_1: {
 					ctor: '::',
-					_0: A3(
+					_0: A4(
 						b,
 						_user$project$Types$Play(m.chordsToGuess),
-						'Hear again [a]',
+						'Hear again',
+						'[a]',
 						false),
 					_1: {
 						ctor: '::',
-						_0: A3(
+						_0: A4(
 							b,
 							_user$project$Types$NewExercise,
-							'Next [spacebar]',
+							'Next',
+							'[spacebar]',
 							!_user$project$Types$allGuessed(m)),
 						_1: {
 							ctor: '::',
-							_0: A3(
+							_0: A4(
 								b,
 								_user$project$Types$MoveToPage(_user$project$Types$SettingsPage),
 								'Settings',
+								'',
 								false),
 							_1: {ctor: '[]'}
 						}
@@ -11095,7 +11037,7 @@ var _user$project$View$content = function (m) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('section columns'),
+					_0: _elm_lang$html$Html_Attributes$class('exercise-screen'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -11104,7 +11046,7 @@ var _user$project$View$content = function (m) {
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('column is-7 is-offset-1'),
+							_0: _elm_lang$html$Html_Attributes$class('quiz'),
 							_1: {ctor: '[]'}
 						},
 						_user$project$View$quiz(m)),
@@ -11114,7 +11056,7 @@ var _user$project$View$content = function (m) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('column'),
+								_0: _elm_lang$html$Html_Attributes$class('buttons-panel'),
 								_1: {ctor: '[]'}
 							},
 							_user$project$View$rightPanelButtons(m)),
@@ -11126,7 +11068,7 @@ var _user$project$View$content = function (m) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('has-text-centered'),
+					_0: _elm_lang$html$Html_Attributes$class('start-screen'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -11135,7 +11077,7 @@ var _user$project$View$content = function (m) {
 						_elm_lang$html$Html$button,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('button is-primary is-large'),
+							_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary'),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$StartExercises),
@@ -11154,7 +11096,7 @@ var _user$project$View$content = function (m) {
 				_elm_lang$html$Html$div,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('section columns'),
+					_0: _elm_lang$html$Html_Attributes$class('settings-screen'),
 					_1: {ctor: '[]'}
 				},
 				{
@@ -11163,7 +11105,7 @@ var _user$project$View$content = function (m) {
 						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('column is-7 is-offset-1'),
+							_0: _elm_lang$html$Html_Attributes$class('settings-list'),
 							_1: {ctor: '[]'}
 						},
 						_user$project$View$settingsView(m)),
@@ -11173,7 +11115,7 @@ var _user$project$View$content = function (m) {
 							_elm_lang$html$Html$div,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('column'),
+								_0: _elm_lang$html$Html_Attributes$class('back-button'),
 								_1: {ctor: '[]'}
 							},
 							{
@@ -11202,6 +11144,20 @@ var _user$project$View$content = function (m) {
 				});
 	}
 };
+var _user$project$View$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('container'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$View$content(model),
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$View$nav = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -11225,24 +11181,6 @@ var _user$project$View$nav = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$View$view = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('container'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _user$project$View$nav,
-			_1: {
-				ctor: '::',
-				_0: _user$project$View$content(model),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 
 var _user$project$Storage$modeToInt = function (m) {
 	var _p0 = m;
@@ -11405,16 +11343,11 @@ var _user$project$Main$subscriptions = function (m) {
 			_1: {
 				ctor: '::',
 				_0: _user$project$Storage$settingsSub(
-					function (maybeSettings) {
-						var _p3 = maybeSettings;
-						if (_p3.ctor === 'Just') {
-							return _user$project$Types$ChangeSettings(
-								function (_p4) {
-									return _p3._0;
-								});
-						} else {
-							return _user$project$Types$NoOp;
-						}
+					function (_p3) {
+						return A2(
+							_elm_lang$core$Maybe$withDefault,
+							_user$project$Types$NoOp,
+							A2(_elm_lang$core$Maybe$map, _user$project$Types$ChangeSettings, _p3));
 					}),
 				_1: {ctor: '[]'}
 			}
@@ -11482,8 +11415,8 @@ var _user$project$Main$play = F3(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -11495,7 +11428,7 @@ var _user$project$Main$update = F2(
 					model,
 					{
 						ctor: '::',
-						_0: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p5._0),
+						_0: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p4._0),
 						_1: {ctor: '[]'}
 					});
 			case 'PlayCustomDelay':
@@ -11504,7 +11437,7 @@ var _user$project$Main$update = F2(
 					model,
 					{
 						ctor: '::',
-						_0: A3(_user$project$Main$play, model.settings.root, _p5._0, _p5._1),
+						_0: A3(_user$project$Main$play, model.settings.root, _p4._0, _p4._1),
 						_1: {ctor: '[]'}
 					});
 			case 'NewExercise':
@@ -11513,16 +11446,16 @@ var _user$project$Main$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'MakeGuess':
-				var _p7 = _p5._0;
+				var _p6 = _p4._0;
 				var isRight = _user$project$Types$allGuessed(model) ? _elm_lang$core$Maybe$Nothing : A2(
 					_elm_lang$core$Maybe$map,
 					function (q) {
-						return _elm_lang$core$Native_Utils.eq(q.answer, _p7);
+						return _elm_lang$core$Native_Utils.eq(q.answer, _p6);
 					},
 					model.currentQuestion);
-				var _p6 = isRight;
-				if (_p6.ctor === 'Just') {
-					if (_p6._0 === true) {
+				var _p5 = isRight;
+				if (_p5.ctor === 'Just') {
+					if (_p5._0 === true) {
 						var newModel = _user$project$Types$nextQuestion(model);
 						return _user$project$Types$allGuessed(newModel) ? (model.settings.autoProceed ? _user$project$Main$getNewExercise(
 							_elm_lang$core$Native_Utils.update(
@@ -11547,7 +11480,7 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									error: true,
-									attemps: A2(_elm_lang$core$Set$insert, _p7, model.attemps)
+									attemps: A2(_elm_lang$core$Set$insert, _p6, model.attemps)
 								}),
 							{ctor: '[]'});
 					}
@@ -11558,10 +11491,10 @@ var _user$project$Main$update = F2(
 						{ctor: '[]'});
 				}
 			case 'Exercise':
-				var _p8 = _p5._0;
+				var _p7 = _p4._0;
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
-					{chordsToGuess: _p8});
+					{chordsToGuess: _p7});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11569,7 +11502,7 @@ var _user$project$Main$update = F2(
 						{
 							currentQuestion: _user$project$Types$getQuestion(newModel)
 						}),
-					_1: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p8)
+					_1: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p7)
 				};
 			case 'StartExercises':
 				return _user$project$Main$getNewExercise(
@@ -11577,15 +11510,18 @@ var _user$project$Main$update = F2(
 						model,
 						{page: _user$project$Types$ExercisePage}));
 			case 'ChangeSettings':
-				var newSettings = _p5._0(model.settings);
+				var _p8 = _p4._0;
+				var newSettings1 = (_elm_lang$core$Native_Utils.cmp(_p8.chordSize, 2) < 0) ? _elm_lang$core$Native_Utils.update(
+					_p8,
+					{guessChordName: false}) : _p8;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{settings: newSettings}),
+						{settings: newSettings1}),
 					{
 						ctor: '::',
-						_0: _user$project$Storage$setSettings(newSettings),
+						_0: _user$project$Storage$setSettings(_p8),
 						_1: {ctor: '[]'}
 					});
 			default:
@@ -11593,7 +11529,7 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{page: _p5._0}),
+						{page: _p4._0}),
 					{ctor: '[]'});
 		}
 	});
