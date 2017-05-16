@@ -1,35 +1,176 @@
-
-
-.button.answer-button {
-  margin: 7px;
-  min-width: 60px;
+body,
+button,
+input,
+select,
+textarea {
+  font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto",
+  "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  "Helvetica", "Arial", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.answer-chord-column {
+html, body {
+  height: 100%;
+}
+
+.is-success,
+.is-danger,
+.is-info {
+  color: white;
+  border-radius: 0.2rem;
+  text-shadow: 0 0.1rem 0.1rem rgba(0, 0, 0, 0.2);
+}
+
+.is-danger {
+  background: rgb(202, 60, 60);
+}
+
+.is-info {
+  background: #3273dc;
+}
+
+.is-info.is-outlined {
+  color: #3273dc; 
+  background: white;
+  border: 0.05rem solid #3273dc;
+  text-shadow: 0 0 0 white;
+}
+
+.is-success {
+  background: rgb(28, 184, 65);
+}
+
+.container {
+  height: 100%;
+}
+
+.start-screen {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-screen button {
+  font-size: 120%;
+}
+
+.exercise-screen {
+  margin: 0.5rem;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  align-items: center;
+}
+
+.exercise-screen .quiz {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  flex-grow: 1;
+}
+
+.exercise-screen .quiz .statistics-line {
+  font-size: 1.2rem;
+  margin: 0.2rem;
+}
+
+.exercise-screen .quiz .answer-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.exercise-screen .quiz .answer-button {
+  margin: 0.2rem;
+  min-width: 5rem;
+  min-height: 2.5em;
+}
+
+
+.exercise-screen .quiz .answer-line {
+  font-size: 1.2rem;
+  min-width: 60%;
+
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.exercise-screen .quiz .answer-line .answer-chord-column {
+  margin: 0.2rem;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
+
+.exercise-screen .buttons-panel {
+  flex-grow: 1;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: center;
+}
+
+.exercise-screen .buttons-panel button {
+  margin: 0.2rem;
+}
+
+
+.key-binding {
+  margin-left: 0.5em;
+}
+@media only screen and (max-width: 800px) {
+  .exercise-screen .quiz .answer-button .key-binding,
+  .exercise-screen .buttons-panel .key-binding {
+    display: none;
+  }
+}
+
+
+.settings-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-screen .settings-list {
+  width: 100%;
+  max-width: 35rem;
+}
+
+.settings-screen .settings-list button {
+  border: 0;
+}
+
+.settings-screen .settings-list .settings-field {
+  border-bottom: 0.05em solid lightgray;
+  padding: 0.5em;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-screen .settings-list .root-note {
   display: inline-block;
-  margin-left: 50px;
+  min-width: 4rem;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
-.settings-field {
-  margin: 15px 0;
+.settings-screen .back-button button {
+  margin: 1rem;
+  padding: 0.5rem;
 }
 
-.settings-field .setting-label {
-  display: inline-block;
-  min-width: 140px;
-  vertical-align: bottom;
-  margin-bottom: 9px;
-}
-
-.settings-field .field, .settings-field p {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.settings-field span {
-  font-size: 16pt;
-  margin: 6px;
-}
 
 
 /*************** SWITCH START *********************/

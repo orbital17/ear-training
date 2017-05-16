@@ -15,16 +15,14 @@ nav =
         ]
 
 
-rightPanelButton : Msg -> String -> Bool -> Html Msg
-rightPanelButton msg title isDisabled =
-    p [ class "field" ]
-        [ button
-            [ class "button is-info is-outlined"
-            , onClick msg
-            , Html.Attributes.disabled isDisabled
-            ]
-            [ text title ]
+rightPanelButton : Msg -> String -> String -> Bool -> Html Msg
+rightPanelButton msg title keyBinding isDisabled =
+    button
+        [ class "pure-button is-info is-outlined"
+        , onClick msg
+        , Html.Attributes.disabled isDisabled
         ]
+        [ text title, span [ class "key-binding" ] [ text keyBinding ] ]
 
 
 rightPanelButtons : Model -> List (Html Msg)
@@ -33,12 +31,12 @@ rightPanelButtons m =
         b =
             rightPanelButton
     in
-        [ b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode)) "Hear cadence" False
-        , b (Play <| Music.toMelodic m.chordsToGuess) "Hear sequentially" False
-        , b (Play [ [ 0, 12 ] ]) "Hear tonic [c]" False
-        , b (Play m.chordsToGuess) "Hear again [a]" False
-        , b (NewExercise) "Next [spacebar]" (not (allGuessed m))
-        , b (MoveToPage SettingsPage) "Settings" False
+        [ b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode)) "Hear cadence" "" False
+        , b (Play <| Music.toMelodic m.chordsToGuess) "Hear sequentially" "" False
+        , b (Play [ [ 0, 12 ] ]) "Hear tonic" "[c]" False
+        , b (Play m.chordsToGuess) "Hear again" "[a]" False
+        , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m))
+        , b (MoveToPage SettingsPage) "Settings" "" False
         ]
 
 
@@ -55,7 +53,7 @@ answerButton m answerOption =
     in
         button
             [ classList
-                [ ( "button", True )
+                [ ( "pure-button", True )
                 , ( "answer-button", True )
                 , ( "is-danger", attemted )
                 , ( "is-info", not attemted )
@@ -65,7 +63,9 @@ answerButton m answerOption =
                 ]
             , onClick (MakeGuess answerOption.index)
             ]
-            [ text <| answerOption.name ++ " [" ++ String.fromChar answerOption.keyMap ++ "]" ]
+            [ span [] [ text answerOption.name ]
+            , span [ class "key-binding" ] [ text <| "[" ++ String.fromChar answerOption.keyMap ++ "]" ]
+            ]
 
 
 answerButtons : Model -> List (Html Msg)
@@ -85,7 +85,7 @@ answerLine m =
             else if chordIndex == m.guessed.chords && noteIndex == m.guessed.notes then
                 " ? "
             else
-                ""
+                " · "
 
         chordNameCell chordIndex chord =
             if (chordIndex < m.guessed.chords) then
@@ -93,7 +93,7 @@ answerLine m =
             else if chordIndex == m.guessed.chords && (List.length chord) == m.guessed.notes then
                 " ? "
             else
-                ""
+                " · "
 
         chordColumn chordIndex chord =
             chord
@@ -104,8 +104,7 @@ answerLine m =
                      else
                         []
                     )
-                |> List.map (\s -> span [ class "is-large label" ] [ text s ])
-                |> List.reverse
+                |> List.map (\s -> span [] [ text s ])
     in
         m.chordsToGuess
             |> List.indexedMap chordColumn
@@ -114,7 +113,7 @@ answerLine m =
 
 quiz : Model -> List (Html Msg)
 quiz m =
-    [ div [ class "block" ]
+    [ div [ class "statistics-line" ]
         [ text
             (toString m.stat.correct
                 ++ " of "
@@ -122,8 +121,8 @@ quiz m =
                 ++ " correct"
             )
         ]
-    , div [ class "block" ] <| answerButtons m
-    , div [ class "block" ] <| answerLine m
+    , div [ class "answer-buttons" ] <| answerButtons m
+    , div [ class "answer-line" ] <| answerLine m
     ]
 
 
@@ -131,18 +130,14 @@ settingsView : Model -> List (Html Msg)
 settingsView m =
     let
         b msg title isSelected =
-            p [ class "control" ]
-                [ button
-                    [ classList
-                        [ ( "button is-info", True )
-                        , ( "is-outlined", not isSelected )
-
-                        --, ( "is-active", isSelected )
-                        ]
-                    , onClick msg
+            button
+                [ classList
+                    [ ( "pure-button is-info", True )
+                    , ( "is-outlined", not isSelected )
                     ]
-                    [ text title ]
+                , onClick msg
                 ]
+                [ text title ]
 
         switch msg checked =
             Html.label [ class "switch" ]
@@ -156,49 +151,42 @@ settingsView m =
                 ]
 
         settingField title inputs =
-            div [ class "settings-field" ] [ div [ class "setting-label" ] [ text title ], inputs ]
+            div [ class "settings-field" ] [ div [ class "setting-label" ] [ text title ], div [] inputs ]
 
         s =
             m.settings
     in
         [ settingField "Scale" <|
-            div [ class "field has-addons" ]
-                [ b (ChangeSettings { s | mode = Major }) "Major" (s.mode == Major)
-                , b (ChangeSettings { s | mode = Minor }) "Minor" (s.mode == Minor)
-                ]
+            [ b (ChangeSettings { s | mode = Major }) "Major" (s.mode == Major)
+            , b (ChangeSettings { s | mode = Minor }) "Minor" (s.mode == Minor)
+            ]
         , settingField "Auto proceed" <|
-            div [ class "field" ]
-                [ switch (ChangeSettings { s | autoProceed = not s.autoProceed }) s.autoProceed ]
+            [ switch (ChangeSettings { s | autoProceed = not s.autoProceed }) s.autoProceed ]
         , settingField "Name guess" <|
-            div [ class "field has-addons" ]
-                [ switch (ChangeSettings { s | guessChordName = not s.guessChordName }) s.guessChordName ]
+            [ switch (ChangeSettings { s | guessChordName = not s.guessChordName }) s.guessChordName ]
         , settingField "Delay" <|
-            div [ class "field has-addons" ]
-                [ b (ChangeSettings { s | delay = 0.4 }) "0.4" (s.delay == 0.4)
-                , b (ChangeSettings { s | delay = 0.7 }) "0.7" (s.delay == 0.7)
-                , b (ChangeSettings { s | delay = 1 }) "1" (s.delay == 1)
-                ]
+            [ b (ChangeSettings { s | delay = 0.4 }) "0.4" (s.delay == 0.4)
+            , b (ChangeSettings { s | delay = 0.7 }) "0.7" (s.delay == 0.7)
+            , b (ChangeSettings { s | delay = 1 }) "1" (s.delay == 1)
+            ]
         , settingField "Notes in chord" <|
-            div [ class "field has-addons" ]
-                [ b (ChangeSettings { s | chordSize = 1 }) "1" (s.chordSize == 1)
-                , b (ChangeSettings { s | chordSize = 2 }) "2" (s.chordSize == 2)
-                , b (ChangeSettings { s | chordSize = 3 }) "3" (s.chordSize == 3)
-                ]
+            [ b (ChangeSettings { s | chordSize = 1 }) "1" (s.chordSize == 1)
+            , b (ChangeSettings { s | chordSize = 2 }) "2" (s.chordSize == 2)
+            , b (ChangeSettings { s | chordSize = 3 }) "3" (s.chordSize == 3)
+            ]
         , settingField "Chords number" <|
-            div [ class "field has-addons" ] <|
-                List.map
-                    (\i ->
-                        b (ChangeSettings { s | chordsInSequence = i })
-                            (toString i)
-                            (s.chordsInSequence == i)
-                    )
-                    (List.range 1 4)
+            List.map
+                (\i ->
+                    b (ChangeSettings { s | chordsInSequence = i })
+                        (toString i)
+                        (s.chordsInSequence == i)
+                )
+                (List.range 1 4)
         , settingField "Root note" <|
-            div [ class "field" ]
-                [ b (ChangeSettings { s | root = s.root - 1 }) "-" False
-                , span [ class "" ] [ text (Music.noteToString s.root) ]
-                , b (ChangeSettings { s | root = s.root + 1 }) "+" False
-                ]
+            [ b (ChangeSettings { s | root = s.root - 1 }) "-" False
+            , span [ class "root-note" ] [ text (Music.noteToString s.root) ]
+            , b (ChangeSettings { s | root = s.root + 1 }) "+" False
+            ]
         ]
 
 
@@ -206,19 +194,19 @@ content : Model -> Html Msg
 content m =
     case m.page of
         ExercisePage ->
-            div [ class "section columns" ]
-                [ div [ class "column is-7 is-offset-1" ] (quiz m)
-                , div [ class "column" ] (rightPanelButtons m)
+            div [ class "exercise-screen" ]
+                [ div [ class "quiz" ] (quiz m)
+                , div [ class "buttons-panel" ] (rightPanelButtons m)
                 ]
 
         MainPage ->
-            div [ class "has-text-centered" ]
-                [ button [ class "button is-primary is-large", (onClick StartExercises) ] [ text "Start" ] ]
+            div [ class "start-screen" ]
+                [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Start" ] ]
 
         SettingsPage ->
-            div [ class "section columns" ]
-                [ div [ class "column is-7 is-offset-1" ] (settingsView m)
-                , div [ class "column" ]
+            div [ class "settings-screen" ]
+                [ div [ class "settings-list" ] (settingsView m)
+                , div [ class "back-button" ]
                     [ button
                         [ class "button is-info is-outlined"
                         , (onClick <| MoveToPage ExercisePage)
@@ -230,4 +218,4 @@ content m =
 
 view : Model -> Html Msg
 view model =
-    div [ class "container" ] [ nav, (content model) ]
+    div [ class "container" ] [ (content model) ]

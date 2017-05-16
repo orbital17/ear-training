@@ -32,9 +32,9 @@ initSettings : Settings
 initSettings =
     { root = 48
     , mode = Music.Major
-    , guessChordName = True
+    , guessChordName = False
     , autoProceed = False
-    , chordSize = 2
+    , chordSize = 1
     , chordsInSequence = 1
     , delay = 1
     }
