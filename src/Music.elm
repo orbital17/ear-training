@@ -84,6 +84,35 @@ getCadence mode =
     List.map (getChord mode) [ 1, 4, 5, 1 ]
 
 
+getSequenceToTonic : Mode -> List Chord -> List Chord
+getSequenceToTonic mode chords =
+    let
+        note =
+            Maybe.withDefault 0 <| Maybe.andThen List.head (List.head chords)
+
+        notes =
+            modeNotes mode
+
+        index =
+            Maybe.withDefault 0 <| Utils.indexOf (note % 12) notes
+
+        nOctaves =
+            note // 12
+
+        descending =
+            List.reverse <| List.take (index + 1) notes
+
+        ascending =
+            (List.drop index notes) ++ [ 12 ]
+    in
+        (if index < 4 then
+            descending
+         else
+            ascending
+        )
+            |> List.map (\n -> [ n + nOctaves * 12 ])
+
+
 tonicOctave : List Chord
 tonicOctave =
     [ [ 0, 12 ] ]

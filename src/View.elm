@@ -15,28 +15,46 @@ nav =
         ]
 
 
-rightPanelButton : Msg -> String -> String -> Bool -> Html Msg
-rightPanelButton msg title keyBinding isDisabled =
+actionButton : Msg -> String -> String -> Bool -> Bool -> Html Msg
+actionButton msg title keyBinding isDisabled isHidden =
     button
-        [ class "pure-button is-info is-outlined"
+        [ classList [ ( "pure-button is-info is-outlined", True ), ( "hidden", isHidden ) ]
         , onClick msg
         , Html.Attributes.disabled isDisabled
         ]
         [ text title, span [ class "key-binding" ] [ text keyBinding ] ]
 
 
-rightPanelButtons : Model -> List (Html Msg)
-rightPanelButtons m =
+actionButtons : Model -> List (Html Msg)
+actionButtons m =
     let
         b =
-            rightPanelButton
+            actionButton
     in
-        [ b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode)) "Hear cadence" "" False
-        , b (Play <| Music.toMelodic m.chordsToGuess) "Hear sequentially" "" False
-        , b (Play [ [ 0, 12 ] ]) "Hear tonic" "[c]" False
-        , b (Play m.chordsToGuess) "Hear again" "[a]" False
-        , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m))
-        , b (MoveToPage SettingsPage) "Settings" "" False
+        [ b (Play m.chordsToGuess) "Hear again" "[a]" False False
+        , b (Play [ [ 0, 12 ] ]) "Hear tonic" "[c]" False False
+        , b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode))
+            "Hear cadence"
+            ""
+            False
+            False
+        , b (Play <| Music.toMelodic m.chordsToGuess)
+            "Hear sequentially"
+            ""
+            False
+            (m.settings.chordSize == 1)
+        , b (PlayCustomDelay 0.5 (Music.getSequenceToTonic m.settings.mode m.chordsToGuess))
+            "Hear sequence to tonic"
+            ""
+            (not (allGuessed m))
+            (m.settings.chordSize
+                > 1
+                || m.settings.chordsInSequence
+                > 1
+                || m.settings.autoProceed
+            )
+        , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m)) m.settings.autoProceed
+        , b (MoveToPage SettingsPage) "Settings" "" False False
         ]
 
 
@@ -121,8 +139,9 @@ quiz m =
                 ++ " correct"
             )
         ]
-    , div [ class "answer-buttons" ] <| answerButtons m
     , div [ class "answer-line" ] <| answerLine m
+    , div [ class "answer-buttons" ] <| answerButtons m
+    , div [ class "buttons-panel" ] (actionButtons m)
     ]
 
 
@@ -160,14 +179,10 @@ settingsView m =
             [ b (ChangeSettings { s | mode = Major }) "Major" (s.mode == Major)
             , b (ChangeSettings { s | mode = Minor }) "Minor" (s.mode == Minor)
             ]
-        , settingField "Auto proceed" <|
-            [ switch (ChangeSettings { s | autoProceed = not s.autoProceed }) s.autoProceed ]
-        , settingField "Name guess" <|
-            [ switch (ChangeSettings { s | guessChordName = not s.guessChordName }) s.guessChordName ]
-        , settingField "Delay" <|
-            [ b (ChangeSettings { s | delay = 0.4 }) "0.4" (s.delay == 0.4)
-            , b (ChangeSettings { s | delay = 0.7 }) "0.7" (s.delay == 0.7)
-            , b (ChangeSettings { s | delay = 1 }) "1" (s.delay == 1)
+        , settingField "Root note" <|
+            [ b (ChangeSettings { s | root = s.root - 1 }) "-" False
+            , span [ class "root-note" ] [ text (Music.noteToString s.root) ]
+            , b (ChangeSettings { s | root = s.root + 1 }) "+" False
             ]
         , settingField "Notes in chord" <|
             [ b (ChangeSettings { s | chordSize = 1 }) "1" (s.chordSize == 1)
@@ -182,10 +197,14 @@ settingsView m =
                         (s.chordsInSequence == i)
                 )
                 (List.range 1 4)
-        , settingField "Root note" <|
-            [ b (ChangeSettings { s | root = s.root - 1 }) "-" False
-            , span [ class "root-note" ] [ text (Music.noteToString s.root) ]
-            , b (ChangeSettings { s | root = s.root + 1 }) "+" False
+        , settingField "Auto proceed" <|
+            [ switch (ChangeSettings { s | autoProceed = not s.autoProceed }) s.autoProceed ]
+        , settingField "Name guess" <|
+            [ switch (ChangeSettings { s | guessChordName = not s.guessChordName }) s.guessChordName ]
+        , settingField "Delay" <|
+            [ b (ChangeSettings { s | delay = 0.4 }) "0.4" (s.delay == 0.4)
+            , b (ChangeSettings { s | delay = 0.7 }) "0.7" (s.delay == 0.7)
+            , b (ChangeSettings { s | delay = 1 }) "1" (s.delay == 1)
             ]
         ]
 
@@ -194,10 +213,7 @@ content : Model -> Html Msg
 content m =
     case m.page of
         ExercisePage ->
-            div [ class "exercise-screen" ]
-                [ div [ class "quiz" ] (quiz m)
-                , div [ class "buttons-panel" ] (rightPanelButtons m)
-                ]
+            div [ class "exercise-screen" ] (quiz m)
 
         MainPage ->
             div [ class "start-screen" ]

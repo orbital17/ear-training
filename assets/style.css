@@ -56,7 +56,6 @@ html, body {
 }
 
 .exercise-screen {
-  margin: 0.5rem;
   height: 100%;
   display: flex;
   justify-content: space-around;
@@ -64,34 +63,26 @@ html, body {
   align-items: center;
 }
 
-.exercise-screen .quiz {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
 
-  flex-grow: 1;
-}
-
-.exercise-screen .quiz .statistics-line {
+.exercise-screen .statistics-line {
   font-size: 1.2rem;
   margin: 0.2rem;
 }
 
-.exercise-screen .quiz .answer-buttons {
+.exercise-screen .answer-buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.exercise-screen .quiz .answer-button {
+.exercise-screen .answer-button {
   margin: 0.2rem;
   min-width: 5rem;
   min-height: 2.5em;
 }
 
 
-.exercise-screen .quiz .answer-line {
+.exercise-screen .answer-line {
   font-size: 1.2rem;
   min-width: 60%;
 
@@ -100,7 +91,7 @@ html, body {
 
 }
 
-.exercise-screen .quiz .answer-line .answer-chord-column {
+.exercise-screen .answer-line .answer-chord-column {
   margin: 0.2rem;
 
   display: flex;
@@ -110,7 +101,6 @@ html, body {
 
 
 .exercise-screen .buttons-panel {
-  flex-grow: 1;
 
   display: flex;
   flex-wrap: wrap;
@@ -128,7 +118,7 @@ html, body {
   margin-left: 0.5em;
 }
 @media only screen and (max-width: 800px) {
-  .exercise-screen .quiz .answer-button .key-binding,
+  .exercise-screen .answer-button .key-binding,
   .exercise-screen .buttons-panel .key-binding {
     display: none;
   }
@@ -140,6 +130,8 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  padding: 0.5rem;
 }
 
 .settings-screen .settings-list {
