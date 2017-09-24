@@ -160,23 +160,26 @@ keyboardMap model key =
                 |> List.filter (\option -> option.keyMap == key)
                 |> List.head
     in
-        case answer of
-            Just a ->
-                MakeGuess a.index
+        if model.page /= ExercisePage then
+            NoOp
+        else
+            case answer of
+                Just a ->
+                    MakeGuess a.index
 
-            Nothing ->
-                case key of
-                    ' ' ->
-                        NewExercise
+                Nothing ->
+                    case key of
+                        ' ' ->
+                            NewExercise
 
-                    'a' ->
-                        Play model.chordsToGuess
+                        'a' ->
+                            Play model.chordsToGuess
 
-                    'c' ->
-                        Play Music.tonicOctave
+                        'c' ->
+                            Play Music.tonicOctave
 
-                    _ ->
-                        NoOp
+                        _ ->
+                            NoOp
 
 
 subscriptions : Model -> Sub Msg
