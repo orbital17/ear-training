@@ -166,7 +166,7 @@ triadName i =
 
 triadMasks : List ( Int, Int )
 triadMasks =
-    [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ) ]
+    [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ), ( 7, 9 ), ( 7, 8 ), ( 8, 7 ), ( 9, 7 ), ( 5, 3 ), ( 5, 4 ), ( 8, 9 ), ( 9, 8 ) ]
 
 
 triadIndex : ( Int, Int ) -> Int
@@ -178,7 +178,7 @@ triadOptions : List Note -> List Chord
 triadOptions scale =
     let
         extendedScale =
-            scale ++ List.map ((+) 12) scale
+            scale ++ List.map ((+) 12) scale ++ List.map ((+) 24) scale
 
         makeTriad note ( a, b ) =
             [ note, note + a, note + a + b ]
