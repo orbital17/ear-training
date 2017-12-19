@@ -211,6 +211,25 @@ chordName c =
             "_"
 
 
+chordNumbers : List String
+chordNumbers =
+    [ "I", "ii", "iii", "IV", "V", "vi" ]
+
+
+chordNumber : Int -> String
+chordNumber i =
+    Utils.get i chordNumbers
+        |> Maybe.withDefault "-"
+
+
+chordNumberIndex : Mode -> Chord -> Int
+chordNumberIndex m c =
+    List.map (getChord m) (List.range 1 14)
+        |> Utils.indexOf c
+        |> Maybe.withDefault 0
+        |> (\i -> i % 7)
+
+
 getRandom : Mode -> Int -> Generator Chord
 getRandom mode chordSize =
     let
@@ -229,5 +248,28 @@ getRandom mode chordSize =
                     []
     in
         optionsList
+            |> Utils.randomFromList
+            |> Random.map (Maybe.withDefault [])
+
+
+randomProgression : Mode -> Generator (List Chord)
+randomProgression m =
+    let
+        i =
+            getChord m 1
+
+        iv =
+            getChord m 4
+
+        v =
+            getChord m 5
+    in
+        [ [ i, iv, v ]
+        , [ i, v, iv ]
+        , [ iv, i, v ]
+        , [ iv, v, i ]
+        , [ v, iv, i ]
+        , [ v, i, iv ]
+        ]
             |> Utils.randomFromList
             |> Random.map (Maybe.withDefault [])

@@ -217,7 +217,11 @@ content m =
 
         MainPage ->
             div [ class "start-screen" ]
-                [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Start" ] ]
+                [ div [ class "buttons" ]
+                    [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Notes and chords" ]
+                    , button [ class "pure-button pure-button-primary", (onClick StartProgressionExercise) ] [ text "Chord progressions" ]
+                    ]
+                ]
 
         SettingsPage ->
             div [ class "settings-screen" ]
@@ -230,6 +234,9 @@ content m =
                         [ text "Back" ]
                     ]
                 ]
+
+        ChordProgressionsPage ->
+            div [ class "exercise-screen" ] (quiz m)
 
 
 view : Model -> Html Msg

@@ -44,14 +44,21 @@ html, body {
   height: 100%;
 }
 
-.start-screen {
-  height: 100%;
-  display: flex;
-  justify-content: center;
+.start-screen { 
+  height: 100%; 
+  display: flex; 
+  justify-content: center; 
   align-items: center;
 }
 
+.start-screen .buttons {
+  display: inline-flex;
+  align-items: stretch;
+  flex-direction: column;
+}
+
 .start-screen button {
+  margin: 1rem;
   font-size: 120%;
 }
 
