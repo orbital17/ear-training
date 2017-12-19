@@ -72,7 +72,7 @@ type alias AnswerOption =
 
 gammaKeyMap : List Char
 gammaKeyMap =
-    [ '1', 'w', '2', 'e', '3', '4', 'r', '5', 'y', '6', 'u', '7', '8' ]
+    [ 'a', 'w', 's', 'e', 'd', 'f', 't', 'j', 'i', 'k', 'o', 'l', ';' ]
 
 
 triadKeyMap : List Char

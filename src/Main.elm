@@ -172,7 +172,7 @@ keyboardMap model key =
                         ' ' ->
                             NewExercise
 
-                        'a' ->
+                        'x' ->
                             Play model.chordsToGuess
 
                         'c' ->

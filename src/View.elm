@@ -31,7 +31,7 @@ actionButtons m =
         b =
             actionButton
     in
-        [ b (Play m.chordsToGuess) "Hear again" "[a]" False False
+        [ b (Play m.chordsToGuess) "Hear again" "[x]" False False
         , b (Play [ [ 0, 12 ] ]) "Hear tonic" "[c]" False False
         , b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode))
             "Hear cadence"
