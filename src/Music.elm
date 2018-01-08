@@ -254,22 +254,8 @@ getRandom mode chordSize =
 
 randomProgression : Mode -> Generator (List Chord)
 randomProgression m =
-    let
-        i =
-            getChord m 1
-
-        iv =
-            getChord m 4
-
-        v =
-            getChord m 5
-    in
-        [ [ i, iv, v ]
-        , [ i, v, iv ]
-        , [ iv, i, v ]
-        , [ iv, v, i ]
-        , [ v, iv, i ]
-        , [ v, i, iv ]
-        ]
-            |> Utils.randomFromList
-            |> Random.map (Maybe.withDefault [])
+    [ 1, 4, 5, 6 ]
+        |> Utils.permutations
+        |> Utils.randomFromList
+        |> Random.map (Maybe.withDefault [])
+        |> Random.map (List.map (getChord m))

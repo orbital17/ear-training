@@ -219,7 +219,7 @@ type alias Model =
 type Page
     = MainPage
     | ExercisePage
-    | SettingsPage
+    | SettingsPage Page
     | ChordProgressionsPage
 
 

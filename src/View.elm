@@ -54,7 +54,7 @@ actionButtons m =
                 || m.settings.autoProceed
             )
         , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m)) m.settings.autoProceed
-        , b (MoveToPage SettingsPage) "Settings" "" False False
+        , b (MoveToPage <| SettingsPage m.page) "Settings" "" False False
         ]
 
 
@@ -223,13 +223,13 @@ content m =
                     ]
                 ]
 
-        SettingsPage ->
+        SettingsPage page ->
             div [ class "settings-screen" ]
                 [ div [ class "settings-list" ] (settingsView m)
                 , div [ class "back-button" ]
                     [ button
                         [ class "button is-info is-outlined"
-                        , (onClick <| MoveToPage ExercisePage)
+                        , (onClick <| MoveToPage page)
                         ]
                         [ text "Back" ]
                     ]

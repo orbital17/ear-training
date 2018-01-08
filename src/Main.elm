@@ -99,7 +99,7 @@ getNewExercise model =
         changeRoot =
             case model.page of
                 ChordProgressionsPage ->
-                    Random.generate (\key -> ChangeSettings { s | root = 48 + key }) (Random.int 0 11)
+                    Random.generate (\key -> ChangeSettings { s | root = 36 + key }) (Random.int 0 11)
 
                 _ ->
                     Cmd.none
