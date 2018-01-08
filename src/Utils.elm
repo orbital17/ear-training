@@ -1,6 +1,6 @@
 module Utils exposing (..)
 
-import List
+import List exposing (length, drop, take)
 import Random exposing (Generator)
 
 
@@ -24,3 +24,24 @@ indexOf a list =
         |> List.filter (\( _, snd ) -> snd == a)
         |> List.head
         |> Maybe.map (\( fst, _ ) -> fst)
+
+
+permutations : List a -> List (List a)
+permutations list =
+    if length list < 2 then
+        [ list ]
+    else
+        let
+            prev =
+                permutations (drop 1 list)
+
+            h =
+                take 1 list
+
+            put l =
+                List.map
+                    (\index -> List.concat [ take index l, h, drop index l ])
+                    (List.range 0 (length l))
+        in
+            List.map put prev
+                |> List.concat

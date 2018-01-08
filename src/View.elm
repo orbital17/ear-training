@@ -31,7 +31,7 @@ actionButtons m =
         b =
             actionButton
     in
-        [ b (Play m.chordsToGuess) "Hear again" "[a]" False False
+        [ b (Play m.chordsToGuess) "Hear again" "[x]" False False
         , b (Play [ [ 0, 12 ] ]) "Hear tonic" "[c]" False False
         , b (PlayCustomDelay 0.5 (Music.getCadence m.settings.mode))
             "Hear cadence"
@@ -54,7 +54,7 @@ actionButtons m =
                 || m.settings.autoProceed
             )
         , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m)) m.settings.autoProceed
-        , b (MoveToPage SettingsPage) "Settings" "" False False
+        , b (MoveToPage <| SettingsPage m.page) "Settings" "" False False
         ]
 
 
@@ -217,19 +217,26 @@ content m =
 
         MainPage ->
             div [ class "start-screen" ]
-                [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Start" ] ]
+                [ div [ class "buttons" ]
+                    [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Notes and chords" ]
+                    , button [ class "pure-button pure-button-primary", (onClick StartProgressionExercise) ] [ text "Chord progressions" ]
+                    ]
+                ]
 
-        SettingsPage ->
+        SettingsPage page ->
             div [ class "settings-screen" ]
                 [ div [ class "settings-list" ] (settingsView m)
                 , div [ class "back-button" ]
                     [ button
                         [ class "button is-info is-outlined"
-                        , (onClick <| MoveToPage ExercisePage)
+                        , (onClick <| MoveToPage page)
                         ]
                         [ text "Back" ]
                     ]
                 ]
+
+        ChordProgressionsPage ->
+            div [ class "exercise-screen" ] (quiz m)
 
 
 view : Model -> Html Msg

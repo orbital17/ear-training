@@ -166,7 +166,7 @@ triadName i =
 
 triadMasks : List ( Int, Int )
 triadMasks =
-    [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ) ]
+    [ ( 4, 3 ), ( 3, 4 ), ( 4, 4 ), ( 3, 3 ), ( 3, 5 ), ( 4, 5 ), ( 5, 3 ), ( 5, 4 ), ( 3, 6 ), ( 6, 3 ) ]
 
 
 triadIndex : ( Int, Int ) -> Int
@@ -178,7 +178,7 @@ triadOptions : List Note -> List Chord
 triadOptions scale =
     let
         extendedScale =
-            scale ++ List.map ((+) 12) scale
+            scale ++ List.map ((+) 12) scale ++ List.map ((+) 24) scale
 
         makeTriad note ( a, b ) =
             [ note, note + a, note + a + b ]
@@ -211,6 +211,25 @@ chordName c =
             "_"
 
 
+chordNumbers : List String
+chordNumbers =
+    [ "I", "ii", "iii", "IV", "V", "vi" ]
+
+
+chordNumber : Int -> String
+chordNumber i =
+    Utils.get i chordNumbers
+        |> Maybe.withDefault "-"
+
+
+chordNumberIndex : Mode -> Chord -> Int
+chordNumberIndex m c =
+    List.map (getChord m) (List.range 1 14)
+        |> Utils.indexOf c
+        |> Maybe.withDefault 0
+        |> (\i -> i % 7)
+
+
 getRandom : Mode -> Int -> Generator Chord
 getRandom mode chordSize =
     let
@@ -231,3 +250,12 @@ getRandom mode chordSize =
         optionsList
             |> Utils.randomFromList
             |> Random.map (Maybe.withDefault [])
+
+
+randomProgression : Mode -> Generator (List Chord)
+randomProgression m =
+    [ 1, 4, 5, 6 ]
+        |> Utils.permutations
+        |> Utils.randomFromList
+        |> Random.map (Maybe.withDefault [])
+        |> Random.map (List.map (getChord m))

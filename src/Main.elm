@@ -73,11 +73,39 @@ getRandomChords s =
         Random.list s.chordsInSequence getChord
 
 
+getRandomProgression : Types.Settings -> Random.Generator (List Chord)
+getRandomProgression s =
+    let
+        transposeProgression octaves progression =
+            List.map2 Music.transpose (List.map (\i -> 12 * i) octaves) progression
+    in
+        Random.map2 transposeProgression (Random.list 5 (Random.int 0 1)) (Music.randomProgression s.mode)
+
+
 getNewExercise : Model -> ( Model, Cmd Msg )
 getNewExercise model =
-    ( { model | guessed = { chords = 0, notes = 0 }, error = False }
-    , Random.generate Exercise (getRandomChords model.settings)
-    )
+    let
+        s =
+            model.settings
+
+        generator =
+            case model.page of
+                ChordProgressionsPage ->
+                    getRandomProgression s
+
+                _ ->
+                    getRandomChords s
+
+        changeRoot =
+            case model.page of
+                ChordProgressionsPage ->
+                    Random.generate (\key -> ChangeSettings { s | root = 36 + key }) (Random.int 0 11)
+
+                _ ->
+                    Cmd.none
+    in
+        { model | guessed = { chords = 0, notes = 0 }, error = False }
+            ! [ Random.generate Exercise generator, changeRoot ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -151,6 +179,9 @@ update msg model =
         MoveToPage page ->
             { model | page = page } ! []
 
+        StartProgressionExercise ->
+            getNewExercise { model | page = ChordProgressionsPage }
+
 
 keyboardMap : Model -> Char -> Msg
 keyboardMap model key =
@@ -160,23 +191,26 @@ keyboardMap model key =
                 |> List.filter (\option -> option.keyMap == key)
                 |> List.head
     in
-        case answer of
-            Just a ->
-                MakeGuess a.index
+        if model.page /= ExercisePage && model.page /= ChordProgressionsPage then
+            NoOp
+        else
+            case answer of
+                Just a ->
+                    MakeGuess a.index
 
-            Nothing ->
-                case key of
-                    ' ' ->
-                        NewExercise
+                Nothing ->
+                    case key of
+                        ' ' ->
+                            NewExercise
 
-                    'a' ->
-                        Play model.chordsToGuess
+                        'x' ->
+                            Play model.chordsToGuess
 
-                    'c' ->
-                        Play Music.tonicOctave
+                        'c' ->
+                            Play Music.tonicOctave
 
-                    _ ->
-                        NoOp
+                        _ ->
+                            NoOp
 
 
 subscriptions : Model -> Sub Msg

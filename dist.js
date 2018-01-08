@@ -9541,6 +9541,47 @@ var _elm_lang$keyboard$Keyboard$subMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Keyboard'] = {pkg: 'elm-lang/keyboard', init: _elm_lang$keyboard$Keyboard$init, onEffects: _elm_lang$keyboard$Keyboard$onEffects, onSelfMsg: _elm_lang$keyboard$Keyboard$onSelfMsg, tag: 'sub', subMap: _elm_lang$keyboard$Keyboard$subMap};
 
+var _user$project$Utils$permutations = function (list) {
+	if (_elm_lang$core$Native_Utils.cmp(
+		_elm_lang$core$List$length(list),
+		2) < 0) {
+		return {
+			ctor: '::',
+			_0: list,
+			_1: {ctor: '[]'}
+		};
+	} else {
+		var h = A2(_elm_lang$core$List$take, 1, list);
+		var put = function (l) {
+			return A2(
+				_elm_lang$core$List$map,
+				function (index) {
+					return _elm_lang$core$List$concat(
+						{
+							ctor: '::',
+							_0: A2(_elm_lang$core$List$take, index, l),
+							_1: {
+								ctor: '::',
+								_0: h,
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$core$List$drop, index, l),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				},
+				A2(
+					_elm_lang$core$List$range,
+					0,
+					_elm_lang$core$List$length(l)));
+		};
+		var prev = _user$project$Utils$permutations(
+			A2(_elm_lang$core$List$drop, 1, list));
+		return _elm_lang$core$List$concat(
+			A2(_elm_lang$core$List$map, put, prev));
+	}
+};
 var _user$project$Utils$indexOf = F2(
 	function (a, list) {
 		return A2(
@@ -9582,6 +9623,37 @@ var _user$project$Utils$randomFromList = function (list) {
 		gen);
 };
 
+var _user$project$Music$chordNumbers = {
+	ctor: '::',
+	_0: 'I',
+	_1: {
+		ctor: '::',
+		_0: 'ii',
+		_1: {
+			ctor: '::',
+			_0: 'iii',
+			_1: {
+				ctor: '::',
+				_0: 'IV',
+				_1: {
+					ctor: '::',
+					_0: 'V',
+					_1: {
+						ctor: '::',
+						_0: 'vi',
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		}
+	}
+};
+var _user$project$Music$chordNumber = function (i) {
+	return A2(
+		_elm_lang$core$Maybe$withDefault,
+		'-',
+		A2(_user$project$Utils$get, i, _user$project$Music$chordNumbers));
+};
 var _user$project$Music$triadMasks = {
 	ctor: '::',
 	_0: {ctor: '_Tuple2', _0: 4, _1: 3},
@@ -9600,7 +9672,23 @@ var _user$project$Music$triadMasks = {
 					_1: {
 						ctor: '::',
 						_0: {ctor: '_Tuple2', _0: 4, _1: 5},
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 5, _1: 3},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 5, _1: 4},
+								_1: {
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 3, _1: 6},
+									_1: {
+										ctor: '::',
+										_0: {ctor: '_Tuple2', _0: 6, _1: 3},
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -9636,12 +9724,21 @@ var _user$project$Music$triadOptions = function (scale) {
 		_elm_lang$core$Basics_ops['++'],
 		scale,
 		A2(
-			_elm_lang$core$List$map,
-			F2(
-				function (x, y) {
-					return x + y;
-				})(12),
-			scale));
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$List$map,
+				F2(
+					function (x, y) {
+						return x + y;
+					})(12),
+				scale),
+			A2(
+				_elm_lang$core$List$map,
+				F2(
+					function (x, y) {
+						return x + y;
+					})(24),
+				scale)));
 	var inScale = function (chord) {
 		return A2(
 			_elm_lang$core$List$all,
@@ -10089,6 +10186,51 @@ var _user$project$Music$getCadence = function (mode) {
 			}
 		});
 };
+var _user$project$Music$chordNumberIndex = F2(
+	function (m, c) {
+		return function (i) {
+			return A2(_elm_lang$core$Basics_ops['%'], i, 7);
+		}(
+			A2(
+				_elm_lang$core$Maybe$withDefault,
+				0,
+				A2(
+					_user$project$Utils$indexOf,
+					c,
+					A2(
+						_elm_lang$core$List$map,
+						_user$project$Music$getChord(m),
+						A2(_elm_lang$core$List$range, 1, 14)))));
+	});
+var _user$project$Music$randomProgression = function (m) {
+	return A2(
+		_elm_lang$core$Random$map,
+		_elm_lang$core$List$map(
+			_user$project$Music$getChord(m)),
+		A2(
+			_elm_lang$core$Random$map,
+			_elm_lang$core$Maybe$withDefault(
+				{ctor: '[]'}),
+			_user$project$Utils$randomFromList(
+				_user$project$Utils$permutations(
+					{
+						ctor: '::',
+						_0: 1,
+						_1: {
+							ctor: '::',
+							_0: 4,
+							_1: {
+								ctor: '::',
+								_0: 5,
+								_1: {
+									ctor: '::',
+									_0: 6,
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}))));
+};
 var _user$project$Music$getSequenceToTonic = F2(
 	function (mode, chords) {
 		var notes = _user$project$Music$modeNotes(mode);
@@ -10175,39 +10317,37 @@ var _user$project$Types$questionToString = function (q) {
 			return _user$project$Music$syllable(q.answer);
 		case 'IntervalName':
 			return _user$project$Music$intervalName(q.answer);
-		default:
+		case 'TriadName':
 			return _user$project$Music$triadName(q.answer);
+		default:
+			return _user$project$Music$chordNumber(q.answer);
 	}
 };
 var _user$project$Types$triadKeyMap = {
 	ctor: '::',
-	_0: _elm_lang$core$Native_Utils.chr('1'),
+	_0: _elm_lang$core$Native_Utils.chr('a'),
 	_1: {
 		ctor: '::',
-		_0: _elm_lang$core$Native_Utils.chr('2'),
+		_0: _elm_lang$core$Native_Utils.chr('s'),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$core$Native_Utils.chr('3'),
+			_0: _elm_lang$core$Native_Utils.chr('d'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$core$Native_Utils.chr('4'),
+				_0: _elm_lang$core$Native_Utils.chr('f'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.chr('5'),
+					_0: _elm_lang$core$Native_Utils.chr('j'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$core$Native_Utils.chr('6'),
+						_0: _elm_lang$core$Native_Utils.chr('k'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Native_Utils.chr('7'),
+							_0: _elm_lang$core$Native_Utils.chr('l'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$core$Native_Utils.chr('8'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$core$Native_Utils.chr('9'),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$core$Native_Utils.chr(';'),
+								_1: {ctor: '[]'}
 							}
 						}
 					}
@@ -10218,43 +10358,43 @@ var _user$project$Types$triadKeyMap = {
 };
 var _user$project$Types$gammaKeyMap = {
 	ctor: '::',
-	_0: _elm_lang$core$Native_Utils.chr('1'),
+	_0: _elm_lang$core$Native_Utils.chr('a'),
 	_1: {
 		ctor: '::',
 		_0: _elm_lang$core$Native_Utils.chr('w'),
 		_1: {
 			ctor: '::',
-			_0: _elm_lang$core$Native_Utils.chr('2'),
+			_0: _elm_lang$core$Native_Utils.chr('s'),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$core$Native_Utils.chr('e'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$core$Native_Utils.chr('3'),
+					_0: _elm_lang$core$Native_Utils.chr('d'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$core$Native_Utils.chr('4'),
+						_0: _elm_lang$core$Native_Utils.chr('f'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$core$Native_Utils.chr('r'),
+							_0: _elm_lang$core$Native_Utils.chr('t'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$core$Native_Utils.chr('5'),
+								_0: _elm_lang$core$Native_Utils.chr('j'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$core$Native_Utils.chr('y'),
+									_0: _elm_lang$core$Native_Utils.chr('i'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$core$Native_Utils.chr('6'),
+										_0: _elm_lang$core$Native_Utils.chr('k'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$core$Native_Utils.chr('u'),
+											_0: _elm_lang$core$Native_Utils.chr('o'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$core$Native_Utils.chr('7'),
+												_0: _elm_lang$core$Native_Utils.chr('l'),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$core$Native_Utils.chr('8'),
+													_0: _elm_lang$core$Native_Utils.chr(';'),
 													_1: {ctor: '[]'}
 												}
 											}
@@ -10269,6 +10409,24 @@ var _user$project$Types$gammaKeyMap = {
 		}
 	}
 };
+var _user$project$Types$initStatistics = {total: 0, correct: 0};
+var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: false, autoProceed: false, chordSize: 1, chordsInSequence: 1, delay: 1};
+var _user$project$Types$Settings = F7(
+	function (a, b, c, d, e, f, g) {
+		return {root: a, mode: b, guessChordName: c, autoProceed: d, chordSize: e, chordsInSequence: f, delay: g};
+	});
+var _user$project$Types$Statistics = F2(
+	function (a, b) {
+		return {total: a, correct: b};
+	});
+var _user$project$Types$Question = F2(
+	function (a, b) {
+		return {qType: a, answer: b};
+	});
+var _user$project$Types$AnswerOption = F3(
+	function (a, b, c) {
+		return {name: a, index: b, keyMap: c};
+	});
 var _user$project$Types$getOptions = F2(
 	function (m, t) {
 		var answerOption = F3(
@@ -10298,11 +10456,18 @@ var _user$project$Types$getOptions = F2(
 					_user$project$Music$intervalNames,
 					A2(_elm_lang$core$List$range, 0, 12),
 					_user$project$Types$gammaKeyMap);
-			default:
+			case 'TriadName':
 				return A4(
 					_elm_lang$core$List$map3,
 					answerOption,
 					_user$project$Music$triadNames,
+					A2(_elm_lang$core$List$range, 0, 7),
+					_user$project$Types$triadKeyMap);
+			default:
+				return A4(
+					_elm_lang$core$List$map3,
+					_user$project$Types$AnswerOption,
+					_user$project$Music$chordNumbers,
 					A2(_elm_lang$core$List$range, 0, 7),
 					_user$project$Types$triadKeyMap);
 		}
@@ -10321,28 +10486,11 @@ var _user$project$Types$getOptionsFromModel = function (m) {
 				},
 				m.currentQuestion)));
 };
-var _user$project$Types$initStatistics = {total: 0, correct: 0};
-var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: false, autoProceed: false, chordSize: 1, chordsInSequence: 1, delay: 1};
-var _user$project$Types$Settings = F7(
-	function (a, b, c, d, e, f, g) {
-		return {root: a, mode: b, guessChordName: c, autoProceed: d, chordSize: e, chordsInSequence: f, delay: g};
-	});
-var _user$project$Types$Statistics = F2(
-	function (a, b) {
-		return {total: a, correct: b};
-	});
-var _user$project$Types$Question = F2(
-	function (a, b) {
-		return {qType: a, answer: b};
-	});
-var _user$project$Types$AnswerOption = F3(
-	function (a, b, c) {
-		return {name: a, index: b, keyMap: c};
-	});
 var _user$project$Types$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {stat: a, settings: b, chordsToGuess: c, currentQuestion: d, error: e, guessed: f, attemps: g, page: h};
 	});
+var _user$project$Types$StartProgressionExercise = {ctor: 'StartProgressionExercise'};
 var _user$project$Types$MoveToPage = function (a) {
 	return {ctor: 'MoveToPage', _0: a};
 };
@@ -10365,11 +10513,19 @@ var _user$project$Types$Play = function (a) {
 	return {ctor: 'Play', _0: a};
 };
 var _user$project$Types$NoOp = {ctor: 'NoOp'};
+var _user$project$Types$ChordNumber = {ctor: 'ChordNumber'};
 var _user$project$Types$TriadName = {ctor: 'TriadName'};
 var _user$project$Types$IntervalName = {ctor: 'IntervalName'};
 var _user$project$Types$Degree = {ctor: 'Degree'};
+var _user$project$Types$ChordProgressionsPage = {ctor: 'ChordProgressionsPage'};
 var _user$project$Types$getQuestion = function (m) {
 	var currentChord = A2(_user$project$Utils$get, m.guessed.chords, m.chordsToGuess);
+	var number = function (chord) {
+		return {
+			qType: _user$project$Types$ChordNumber,
+			answer: A2(_user$project$Music$chordNumberIndex, m.settings.mode, chord)
+		};
+	};
 	var degree = function (n) {
 		return {
 			qType: _user$project$Types$Degree,
@@ -10402,11 +10558,15 @@ var _user$project$Types$getQuestion = function (m) {
 		return {qType: _user$project$Types$IntervalName, answer: 0};
 	};
 	var question = function (chord) {
-		var _p4 = A2(_user$project$Utils$get, m.guessed.notes, chord);
-		if (_p4.ctor === 'Just') {
-			return degree(_p4._0);
+		if (_elm_lang$core$Native_Utils.eq(m.page, _user$project$Types$ChordProgressionsPage)) {
+			return number(chord);
 		} else {
-			return name(chord);
+			var _p4 = A2(_user$project$Utils$get, m.guessed.notes, chord);
+			if (_p4.ctor === 'Just') {
+				return degree(_p4._0);
+			} else {
+				return name(chord);
+			}
 		}
 	};
 	return function (q) {
@@ -10421,13 +10581,15 @@ var _user$project$Types$nextQuestion = function (m) {
 			_elm_lang$core$Maybe$withDefault,
 			{ctor: '[]'},
 			A2(_user$project$Utils$get, m.guessed.chords, m.chordsToGuess)));
-	var newGuessed = (_elm_lang$core$Native_Utils.cmp(g.notes, currentChordSize - 1) < 0) ? _elm_lang$core$Native_Utils.update(
+	var newGuessed = _elm_lang$core$Native_Utils.eq(m.page, _user$project$Types$ChordProgressionsPage) ? _elm_lang$core$Native_Utils.update(
+		g,
+		{notes: 0, chords: g.chords + 1}) : ((_elm_lang$core$Native_Utils.cmp(g.notes, currentChordSize - 1) < 0) ? _elm_lang$core$Native_Utils.update(
 		g,
 		{notes: g.notes + 1}) : ((m.settings.guessChordName && _elm_lang$core$Native_Utils.eq(g.notes, currentChordSize - 1)) ? _elm_lang$core$Native_Utils.update(
 		g,
 		{notes: g.notes + 1}) : _elm_lang$core$Native_Utils.update(
 		g,
-		{notes: 0, chords: g.chords + 1}));
+		{notes: 0, chords: g.chords + 1})));
 	var newModel = _elm_lang$core$Native_Utils.update(
 		m,
 		{guessed: newGuessed, attemps: _elm_lang$core$Set$empty});
@@ -10437,7 +10599,9 @@ var _user$project$Types$nextQuestion = function (m) {
 			currentQuestion: _user$project$Types$getQuestion(newModel)
 		});
 };
-var _user$project$Types$SettingsPage = {ctor: 'SettingsPage'};
+var _user$project$Types$SettingsPage = function (a) {
+	return {ctor: 'SettingsPage', _0: a};
+};
 var _user$project$Types$ExercisePage = {ctor: 'ExercisePage'};
 var _user$project$Types$MainPage = {ctor: 'MainPage'};
 var _user$project$Types$initModel = {
@@ -10960,7 +11124,7 @@ var _user$project$View$actionButtons = function (m) {
 			b,
 			_user$project$Types$Play(m.chordsToGuess),
 			'Hear again',
-			'[a]',
+			'[x]',
 			false,
 			false),
 		_1: {
@@ -11032,7 +11196,8 @@ var _user$project$View$actionButtons = function (m) {
 								ctor: '::',
 								_0: A5(
 									b,
-									_user$project$Types$MoveToPage(_user$project$Types$SettingsPage),
+									_user$project$Types$MoveToPage(
+										_user$project$Types$SettingsPage(m.page)),
 									'Settings',
 									'',
 									false,
@@ -11130,24 +11295,54 @@ var _user$project$View$content = function (m) {
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$button,
+						_elm_lang$html$Html$div,
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$StartExercises),
-								_1: {ctor: '[]'}
-							}
+							_0: _elm_lang$html$Html_Attributes$class('buttons'),
+							_1: {ctor: '[]'}
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text('Start'),
-							_1: {ctor: '[]'}
+							_0: A2(
+								_elm_lang$html$Html$button,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$StartExercises),
+										_1: {ctor: '[]'}
+									}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('Notes and chords'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary'),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$StartProgressionExercise),
+											_1: {ctor: '[]'}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('Chord progressions'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}),
 					_1: {ctor: '[]'}
 				});
-		default:
+		case 'SettingsPage':
 			return A2(
 				_elm_lang$html$Html$div,
 				{
@@ -11184,7 +11379,7 @@ var _user$project$View$content = function (m) {
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Events$onClick(
-												_user$project$Types$MoveToPage(_user$project$Types$ExercisePage)),
+												_user$project$Types$MoveToPage(_p1._0)),
 											_1: {ctor: '[]'}
 										}
 									},
@@ -11198,6 +11393,15 @@ var _user$project$View$content = function (m) {
 						_1: {ctor: '[]'}
 					}
 				});
+		default:
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('exercise-screen'),
+					_1: {ctor: '[]'}
+				},
+				_user$project$View$quiz(m));
 	}
 };
 var _user$project$View$view = function (model) {
@@ -11368,20 +11572,24 @@ var _user$project$Main$keyboardMap = F2(
 					return _elm_lang$core$Native_Utils.eq(option.keyMap, key);
 				},
 				_user$project$Types$getOptionsFromModel(model)));
-		var _p0 = answer;
-		if (_p0.ctor === 'Just') {
-			return _user$project$Types$MakeGuess(_p0._0.index);
+		if ((!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ExercisePage)) && (!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ChordProgressionsPage))) {
+			return _user$project$Types$NoOp;
 		} else {
-			var _p1 = key;
-			switch (_p1.valueOf()) {
-				case ' ':
-					return _user$project$Types$NewExercise;
-				case 'a':
-					return _user$project$Types$Play(model.chordsToGuess);
-				case 'c':
-					return _user$project$Types$Play(_user$project$Music$tonicOctave);
-				default:
-					return _user$project$Types$NoOp;
+			var _p0 = answer;
+			if (_p0.ctor === 'Just') {
+				return _user$project$Types$MakeGuess(_p0._0.index);
+			} else {
+				var _p1 = key;
+				switch (_p1.valueOf()) {
+					case ' ':
+						return _user$project$Types$NewExercise;
+					case 'x':
+						return _user$project$Types$Play(model.chordsToGuess);
+					case 'c':
+						return _user$project$Types$Play(_user$project$Music$tonicOctave);
+					default:
+						return _user$project$Types$NoOp;
+				}
 			}
 		}
 	});
@@ -11409,6 +11617,29 @@ var _user$project$Main$subscriptions = function (m) {
 			}
 		});
 };
+var _user$project$Main$getRandomProgression = function (s) {
+	var transposeProgression = F2(
+		function (octaves, progression) {
+			return A3(
+				_elm_lang$core$List$map2,
+				_user$project$Music$transpose,
+				A2(
+					_elm_lang$core$List$map,
+					function (i) {
+						return 12 * i;
+					},
+					octaves),
+				progression);
+		});
+	return A3(
+		_elm_lang$core$Random$map2,
+		transposeProgression,
+		A2(
+			_elm_lang$core$Random$list,
+			5,
+			A2(_elm_lang$core$Random$int, 0, 1)),
+		_user$project$Music$randomProgression(s.mode));
+};
 var _user$project$Main$getRandomChords = function (s) {
 	var transpose = F2(
 		function (octave, chord) {
@@ -11422,19 +11653,48 @@ var _user$project$Main$getRandomChords = function (s) {
 	return A2(_elm_lang$core$Random$list, s.chordsInSequence, getChord);
 };
 var _user$project$Main$getNewExercise = function (model) {
-	return {
-		ctor: '_Tuple2',
-		_0: _elm_lang$core$Native_Utils.update(
+	var s = model.settings;
+	var generator = function () {
+		var _p4 = model.page;
+		if (_p4.ctor === 'ChordProgressionsPage') {
+			return _user$project$Main$getRandomProgression(s);
+		} else {
+			return _user$project$Main$getRandomChords(s);
+		}
+	}();
+	var changeRoot = function () {
+		var _p5 = model.page;
+		if (_p5.ctor === 'ChordProgressionsPage') {
+			return A2(
+				_elm_lang$core$Random$generate,
+				function (key) {
+					return _user$project$Types$ChangeSettings(
+						_elm_lang$core$Native_Utils.update(
+							s,
+							{root: 36 + key}));
+				},
+				A2(_elm_lang$core$Random$int, 0, 11));
+		} else {
+			return _elm_lang$core$Platform_Cmd$none;
+		}
+	}();
+	return A2(
+		_elm_lang$core$Platform_Cmd_ops['!'],
+		_elm_lang$core$Native_Utils.update(
 			model,
 			{
 				guessed: {chords: 0, notes: 0},
 				error: false
 			}),
-		_1: A2(
-			_elm_lang$core$Random$generate,
-			_user$project$Types$Exercise,
-			_user$project$Main$getRandomChords(model.settings))
-	};
+		{
+			ctor: '::',
+			_0: A2(_elm_lang$core$Random$generate, _user$project$Types$Exercise, generator),
+			_1: {
+				ctor: '::',
+				_0: changeRoot,
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$countExercise = function (model) {
 	var stat = model.stat;
@@ -11471,8 +11731,8 @@ var _user$project$Main$play = F3(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p4 = msg;
-		switch (_p4.ctor) {
+		var _p6 = msg;
+		switch (_p6.ctor) {
 			case 'NoOp':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
@@ -11484,7 +11744,7 @@ var _user$project$Main$update = F2(
 					model,
 					{
 						ctor: '::',
-						_0: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p4._0),
+						_0: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p6._0),
 						_1: {ctor: '[]'}
 					});
 			case 'PlayCustomDelay':
@@ -11493,7 +11753,7 @@ var _user$project$Main$update = F2(
 					model,
 					{
 						ctor: '::',
-						_0: A3(_user$project$Main$play, model.settings.root, _p4._0, _p4._1),
+						_0: A3(_user$project$Main$play, model.settings.root, _p6._0, _p6._1),
 						_1: {ctor: '[]'}
 					});
 			case 'NewExercise':
@@ -11502,16 +11762,16 @@ var _user$project$Main$update = F2(
 					model,
 					{ctor: '[]'});
 			case 'MakeGuess':
-				var _p6 = _p4._0;
+				var _p8 = _p6._0;
 				var isRight = _user$project$Types$allGuessed(model) ? _elm_lang$core$Maybe$Nothing : A2(
 					_elm_lang$core$Maybe$map,
 					function (q) {
-						return _elm_lang$core$Native_Utils.eq(q.answer, _p6);
+						return _elm_lang$core$Native_Utils.eq(q.answer, _p8);
 					},
 					model.currentQuestion);
-				var _p5 = isRight;
-				if (_p5.ctor === 'Just') {
-					if (_p5._0 === true) {
+				var _p7 = isRight;
+				if (_p7.ctor === 'Just') {
+					if (_p7._0 === true) {
 						var newModel = _user$project$Types$nextQuestion(model);
 						return _user$project$Types$allGuessed(newModel) ? (model.settings.autoProceed ? _user$project$Main$getNewExercise(
 							_elm_lang$core$Native_Utils.update(
@@ -11536,7 +11796,7 @@ var _user$project$Main$update = F2(
 								model,
 								{
 									error: true,
-									attemps: A2(_elm_lang$core$Set$insert, _p6, model.attemps)
+									attemps: A2(_elm_lang$core$Set$insert, _p8, model.attemps)
 								}),
 							{ctor: '[]'});
 					}
@@ -11547,10 +11807,10 @@ var _user$project$Main$update = F2(
 						{ctor: '[]'});
 				}
 			case 'Exercise':
-				var _p7 = _p4._0;
+				var _p9 = _p6._0;
 				var newModel = _elm_lang$core$Native_Utils.update(
 					model,
-					{chordsToGuess: _p7});
+					{chordsToGuess: _p9});
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -11558,7 +11818,7 @@ var _user$project$Main$update = F2(
 						{
 							currentQuestion: _user$project$Types$getQuestion(newModel)
 						}),
-					_1: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p7)
+					_1: A3(_user$project$Main$play, model.settings.root, model.settings.delay, _p9)
 				};
 			case 'StartExercises':
 				return _user$project$Main$getNewExercise(
@@ -11566,10 +11826,10 @@ var _user$project$Main$update = F2(
 						model,
 						{page: _user$project$Types$ExercisePage}));
 			case 'ChangeSettings':
-				var _p8 = _p4._0;
-				var newSettings1 = (_elm_lang$core$Native_Utils.cmp(_p8.chordSize, 2) < 0) ? _elm_lang$core$Native_Utils.update(
-					_p8,
-					{guessChordName: false}) : _p8;
+				var _p10 = _p6._0;
+				var newSettings1 = (_elm_lang$core$Native_Utils.cmp(_p10.chordSize, 2) < 0) ? _elm_lang$core$Native_Utils.update(
+					_p10,
+					{guessChordName: false}) : _p10;
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
@@ -11577,25 +11837,30 @@ var _user$project$Main$update = F2(
 						{settings: newSettings1}),
 					{
 						ctor: '::',
-						_0: _user$project$Storage$setSettings(_p8),
+						_0: _user$project$Storage$setSettings(_p10),
 						_1: {ctor: '[]'}
 					});
-			default:
+			case 'MoveToPage':
 				return A2(
 					_elm_lang$core$Platform_Cmd_ops['!'],
 					_elm_lang$core$Native_Utils.update(
 						model,
-						{page: _p4._0}),
+						{page: _p6._0}),
 					{ctor: '[]'});
+			default:
+				return _user$project$Main$getNewExercise(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{page: _user$project$Types$ChordProgressionsPage}));
 		}
 	});
 var _user$project$Main$debugUpdate = F2(
 	function (msg, model) {
-		var _p9 = A2(_elm_lang$core$Debug$log, 'msg', msg);
-		var _p10 = A2(_user$project$Main$update, msg, model);
-		var newModel = _p10._0;
-		var cmds = _p10._1;
-		var _p11 = A2(_elm_lang$core$Debug$log, 'model', newModel);
+		var _p11 = A2(_elm_lang$core$Debug$log, 'msg', msg);
+		var _p12 = A2(_user$project$Main$update, msg, model);
+		var newModel = _p12._0;
+		var cmds = _p12._1;
+		var _p13 = A2(_elm_lang$core$Debug$log, 'model', newModel);
 		return {ctor: '_Tuple2', _0: newModel, _1: cmds};
 	});
 var _user$project$Main$main = _elm_lang$html$Html$program(

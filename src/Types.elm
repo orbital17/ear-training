@@ -15,6 +15,7 @@ type Msg
     | StartExercises
     | ChangeSettings Settings
     | MoveToPage Page
+    | StartProgressionExercise
 
 
 type alias Settings =
@@ -55,6 +56,7 @@ type QuestionType
     = Degree
     | IntervalName
     | TriadName
+    | ChordNumber
 
 
 type alias Question =
@@ -72,12 +74,12 @@ type alias AnswerOption =
 
 gammaKeyMap : List Char
 gammaKeyMap =
-    [ '1', 'w', '2', 'e', '3', '4', 'r', '5', 'y', '6', 'u', '7', '8' ]
+    [ 'a', 'w', 's', 'e', 'd', 'f', 't', 'j', 'i', 'k', 'o', 'l', ';' ]
 
 
 triadKeyMap : List Char
 triadKeyMap =
-    [ '1', '2', '3', '4', '5', '6', '7', '8', '9' ]
+    [ 'a', 's', 'd', 'f', 'j', 'k', 'l', ';' ]
 
 
 getOptions : Music.Mode -> QuestionType -> List AnswerOption
@@ -103,6 +105,9 @@ getOptions m t =
             TriadName ->
                 List.map3 answerOption Music.triadNames (List.range 0 7) triadKeyMap
 
+            ChordNumber ->
+                List.map3 AnswerOption Music.chordNumbers (List.range 0 7) triadKeyMap
+
 
 questionToString : Question -> String
 questionToString q =
@@ -115,6 +120,9 @@ questionToString q =
 
         TriadName ->
             Music.triadName q.answer
+
+        ChordNumber ->
+            Music.chordNumber q.answer
 
 
 getOptionsFromModel : Model -> List AnswerOption
@@ -142,16 +150,22 @@ getQuestion m =
         degree n =
             { qType = Degree, answer = (n % 12) }
 
+        number chord =
+            { qType = ChordNumber, answer = Music.chordNumberIndex m.settings.mode chord }
+
         currentChord =
             Utils.get m.guessed.chords m.chordsToGuess
 
         question chord =
-            case (Utils.get m.guessed.notes chord) of
-                Just note ->
-                    degree note
+            if m.page == ChordProgressionsPage then
+                number chord
+            else
+                case (Utils.get m.guessed.notes chord) of
+                    Just note ->
+                        degree note
 
-                Nothing ->
-                    name chord
+                    Nothing ->
+                        name chord
     in
         currentChord
             |> Maybe.map question
@@ -175,7 +189,9 @@ nextQuestion m =
             m.guessed
 
         newGuessed =
-            if g.notes < currentChordSize - 1 then
+            if m.page == ChordProgressionsPage then
+                { g | notes = 0, chords = g.chords + 1 }
+            else if g.notes < currentChordSize - 1 then
                 { g | notes = g.notes + 1 }
             else if m.settings.guessChordName && g.notes == currentChordSize - 1 then
                 { g | notes = g.notes + 1 }
@@ -203,7 +219,8 @@ type alias Model =
 type Page
     = MainPage
     | ExercisePage
-    | SettingsPage
+    | SettingsPage Page
+    | ChordProgressionsPage
 
 
 initModel : Model
