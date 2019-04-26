@@ -259,3 +259,23 @@ randomProgression m =
         |> Utils.randomFromList
         |> Random.map (Maybe.withDefault [])
         |> Random.map (List.map (getChord m))
+
+
+randomNoteInChord : Mode -> Generator Chord
+randomNoteInChord m =
+    let 
+        randomChord =
+            [ 1, 2, 3, 4, 5, 6 ]
+                |> Utils.randomFromList
+                |> Random.map (Maybe.withDefault 1)
+                |> Random.map (getChord m)
+
+        randomNote =
+            modeNotes m
+                |> Utils.randomFromList
+                |> Random.map (Maybe.withDefault 0)
+
+        append chord note =
+            chord ++ [ note + 24 ]
+    in
+        Random.map2 append randomChord randomNote
