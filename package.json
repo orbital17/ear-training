@@ -1,6 +1,6 @@
 {
   "name": "elmapp",
   "dependencies": {
-    "soundfont-player": "^0.10.5"
+    "soundfont-player": "^0.11.0"
   }
 }
