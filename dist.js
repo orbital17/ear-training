@@ -10302,6 +10302,57 @@ var _user$project$Music$getRandom = F2(
 				{ctor: '[]'}),
 			_user$project$Utils$randomFromList(optionsList));
 	});
+var _user$project$Music$randomNoteInChord = function (m) {
+	var append = F2(
+		function (chord, note) {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				chord,
+				{
+					ctor: '::',
+					_0: note + 24,
+					_1: {ctor: '[]'}
+				});
+		});
+	var randomNote = A2(
+		_elm_lang$core$Random$map,
+		_elm_lang$core$Maybe$withDefault(0),
+		_user$project$Utils$randomFromList(
+			_user$project$Music$modeNotes(m)));
+	var randomChord = A2(
+		_elm_lang$core$Random$map,
+		_user$project$Music$getChord(m),
+		A2(
+			_elm_lang$core$Random$map,
+			_elm_lang$core$Maybe$withDefault(1),
+			_user$project$Utils$randomFromList(
+				{
+					ctor: '::',
+					_0: 1,
+					_1: {
+						ctor: '::',
+						_0: 2,
+						_1: {
+							ctor: '::',
+							_0: 3,
+							_1: {
+								ctor: '::',
+								_0: 4,
+								_1: {
+									ctor: '::',
+									_0: 5,
+									_1: {
+										ctor: '::',
+										_0: 6,
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					}
+				})));
+	return A3(_elm_lang$core$Random$map2, append, randomChord, randomNote);
+};
 var _user$project$Music$Minor = {ctor: 'Minor'};
 var _user$project$Music$Major = {ctor: 'Major'};
 
@@ -10490,6 +10541,7 @@ var _user$project$Types$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {stat: a, settings: b, chordsToGuess: c, currentQuestion: d, error: e, guessed: f, attemps: g, page: h};
 	});
+var _user$project$Types$StartNoteInChordExercise = {ctor: 'StartNoteInChordExercise'};
 var _user$project$Types$StartProgressionExercise = {ctor: 'StartProgressionExercise'};
 var _user$project$Types$MoveToPage = function (a) {
 	return {ctor: 'MoveToPage', _0: a};
@@ -10517,6 +10569,7 @@ var _user$project$Types$ChordNumber = {ctor: 'ChordNumber'};
 var _user$project$Types$TriadName = {ctor: 'TriadName'};
 var _user$project$Types$IntervalName = {ctor: 'IntervalName'};
 var _user$project$Types$Degree = {ctor: 'Degree'};
+var _user$project$Types$NoteInChordPage = {ctor: 'NoteInChordPage'};
 var _user$project$Types$ChordProgressionsPage = {ctor: 'ChordProgressionsPage'};
 var _user$project$Types$getQuestion = function (m) {
 	var currentChord = A2(_user$project$Utils$get, m.guessed.chords, m.chordsToGuess);
@@ -11337,7 +11390,26 @@ var _user$project$View$content = function (m) {
 										_0: _elm_lang$html$Html$text('Chord progressions'),
 										_1: {ctor: '[]'}
 									}),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$button,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('pure-button pure-button-primary'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Events$onClick(_user$project$Types$StartNoteInChordExercise),
+												_1: {ctor: '[]'}
+											}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Note in chord'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
 							}
 						}),
 					_1: {ctor: '[]'}
@@ -11393,6 +11465,15 @@ var _user$project$View$content = function (m) {
 						_1: {ctor: '[]'}
 					}
 				});
+		case 'ChordProgressionsPage':
+			return A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('exercise-screen'),
+					_1: {ctor: '[]'}
+				},
+				_user$project$View$quiz(m));
 		default:
 			return A2(
 				_elm_lang$html$Html$div,
@@ -11572,7 +11653,7 @@ var _user$project$Main$keyboardMap = F2(
 					return _elm_lang$core$Native_Utils.eq(option.keyMap, key);
 				},
 				_user$project$Types$getOptionsFromModel(model)));
-		if ((!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ExercisePage)) && (!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ChordProgressionsPage))) {
+		if ((!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ExercisePage)) && ((!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$ChordProgressionsPage)) && (!_elm_lang$core$Native_Utils.eq(model.page, _user$project$Types$NoteInChordPage)))) {
 			return _user$project$Types$NoOp;
 		} else {
 			var _p0 = answer;
@@ -11617,6 +11698,14 @@ var _user$project$Main$subscriptions = function (m) {
 			}
 		});
 };
+var _user$project$Main$getRandomNoteInChord = function (s) {
+	var getChord = _user$project$Music$randomNoteInChord(s.mode);
+	var transpose = F2(
+		function (octave, chord) {
+			return A2(_user$project$Music$transpose, 12 * octave, chord);
+		});
+	return A2(_elm_lang$core$Random$list, 1, getChord);
+};
 var _user$project$Main$getRandomProgression = function (s) {
 	var transposeProgression = F2(
 		function (octaves, progression) {
@@ -11656,10 +11745,13 @@ var _user$project$Main$getNewExercise = function (model) {
 	var s = model.settings;
 	var generator = function () {
 		var _p4 = model.page;
-		if (_p4.ctor === 'ChordProgressionsPage') {
-			return _user$project$Main$getRandomProgression(s);
-		} else {
-			return _user$project$Main$getRandomChords(s);
+		switch (_p4.ctor) {
+			case 'ChordProgressionsPage':
+				return _user$project$Main$getRandomProgression(s);
+			case 'NoteInChordPage':
+				return _user$project$Main$getRandomNoteInChord(s);
+			default:
+				return _user$project$Main$getRandomChords(s);
 		}
 	}();
 	var changeRoot = function () {
@@ -11847,11 +11939,16 @@ var _user$project$Main$update = F2(
 						model,
 						{page: _p6._0}),
 					{ctor: '[]'});
-			default:
+			case 'StartProgressionExercise':
 				return _user$project$Main$getNewExercise(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{page: _user$project$Types$ChordProgressionsPage}));
+			default:
+				return _user$project$Main$getNewExercise(
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{page: _user$project$Types$NoteInChordPage}));
 		}
 	});
 var _user$project$Main$debugUpdate = F2(
