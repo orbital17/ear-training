@@ -220,6 +220,7 @@ content m =
                 [ div [ class "buttons" ]
                     [ button [ class "pure-button pure-button-primary", (onClick StartExercises) ] [ text "Notes and chords" ]
                     , button [ class "pure-button pure-button-primary", (onClick StartProgressionExercise) ] [ text "Chord progressions" ]
+                    , button [ class "pure-button pure-button-primary", (onClick StartNoteInChordExercise) ] [ text "Note in chord" ]
                     ]
                 ]
 
@@ -236,6 +237,9 @@ content m =
                 ]
 
         ChordProgressionsPage ->
+            div [ class "exercise-screen" ] (quiz m)
+
+        NoteInChordPage ->
             div [ class "exercise-screen" ] (quiz m)
 
 

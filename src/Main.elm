@@ -82,6 +82,18 @@ getRandomProgression s =
         Random.map2 transposeProgression (Random.list 5 (Random.int 0 1)) (Music.randomProgression s.mode)
 
 
+getRandomNoteInChord : Types.Settings -> Random.Generator (List Chord)
+getRandomNoteInChord s =
+    let
+        transpose octave chord =
+            Music.transpose (12 * octave) chord
+
+        getChord =
+            Music.randomNoteInChord s.mode
+    in
+        Random.list 1 getChord
+
+
 getNewExercise : Model -> ( Model, Cmd Msg )
 getNewExercise model =
     let
@@ -92,6 +104,9 @@ getNewExercise model =
             case model.page of
                 ChordProgressionsPage ->
                     getRandomProgression s
+
+                NoteInChordPage ->
+                    getRandomNoteInChord s
 
                 _ ->
                     getRandomChords s
@@ -182,6 +197,9 @@ update msg model =
         StartProgressionExercise ->
             getNewExercise { model | page = ChordProgressionsPage }
 
+        StartNoteInChordExercise ->
+            getNewExercise { model | page = NoteInChordPage }
+
 
 keyboardMap : Model -> Char -> Msg
 keyboardMap model key =
@@ -191,7 +209,7 @@ keyboardMap model key =
                 |> List.filter (\option -> option.keyMap == key)
                 |> List.head
     in
-        if model.page /= ExercisePage && model.page /= ChordProgressionsPage then
+        if model.page /= ExercisePage && model.page /= ChordProgressionsPage && model.page /= NoteInChordPage then
             NoOp
         else
             case answer of

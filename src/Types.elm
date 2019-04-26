@@ -16,6 +16,7 @@ type Msg
     | ChangeSettings Settings
     | MoveToPage Page
     | StartProgressionExercise
+    | StartNoteInChordExercise
 
 
 type alias Settings =
@@ -221,6 +222,7 @@ type Page
     | ExercisePage
     | SettingsPage Page
     | ChordProgressionsPage
+    | NoteInChordPage
 
 
 initModel : Model
