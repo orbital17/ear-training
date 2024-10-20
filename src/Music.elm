@@ -211,14 +211,19 @@ chordName c =
             "_"
 
 
-chordNumbers : List String
-chordNumbers =
-    [ "I", "ii", "iii", "IV", "V", "vi", "viio" ]
+chordNumbers : Mode -> List String
+chordNumbers mode =
+    case mode of
+        Major ->
+            [ "I", "ii", "iii", "IV", "V", "vi", "vii°" ]
+
+        Minor ->
+            [ "i", "ii°", "III", "iv", "v", "VI", "VII" ]
 
 
-chordNumber : Int -> String
-chordNumber i =
-    Utils.get i chordNumbers
+chordNumber : Mode -> Int -> String
+chordNumber m i =
+    Utils.get i (chordNumbers m)
         |> Maybe.withDefault "-"
 
 

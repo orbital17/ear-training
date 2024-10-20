@@ -9679,41 +9679,80 @@ var _user$project$Music$chordsSet = function (mode) {
 		};
 	}
 };
-var _user$project$Music$chordNumbers = {
-	ctor: '::',
-	_0: 'I',
-	_1: {
-		ctor: '::',
-		_0: 'ii',
-		_1: {
+var _user$project$Music$chordNumbers = function (mode) {
+	var _p1 = mode;
+	if (_p1.ctor === 'Major') {
+		return {
 			ctor: '::',
-			_0: 'iii',
+			_0: 'I',
 			_1: {
 				ctor: '::',
-				_0: 'IV',
+				_0: 'ii',
 				_1: {
 					ctor: '::',
-					_0: 'V',
+					_0: 'iii',
 					_1: {
 						ctor: '::',
-						_0: 'vi',
+						_0: 'IV',
 						_1: {
 							ctor: '::',
-							_0: 'viio',
-							_1: {ctor: '[]'}
+							_0: 'V',
+							_1: {
+								ctor: '::',
+								_0: 'vi',
+								_1: {
+									ctor: '::',
+									_0: 'vii°',
+									_1: {ctor: '[]'}
+								}
+							}
 						}
 					}
 				}
 			}
-		}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: 'i',
+			_1: {
+				ctor: '::',
+				_0: 'ii°',
+				_1: {
+					ctor: '::',
+					_0: 'III',
+					_1: {
+						ctor: '::',
+						_0: 'iv',
+						_1: {
+							ctor: '::',
+							_0: 'v',
+							_1: {
+								ctor: '::',
+								_0: 'VI',
+								_1: {
+									ctor: '::',
+									_0: 'VII',
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				}
+			}
+		};
 	}
 };
-var _user$project$Music$chordNumber = function (i) {
-	return A2(
-		_elm_lang$core$Maybe$withDefault,
-		'-',
-		A2(_user$project$Utils$get, i, _user$project$Music$chordNumbers));
-};
+var _user$project$Music$chordNumber = F2(
+	function (m, i) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'-',
+			A2(
+				_user$project$Utils$get,
+				i,
+				_user$project$Music$chordNumbers(m)));
+	});
 var _user$project$Music$triadMasks = {
 	ctor: '::',
 	_0: {ctor: '_Tuple2', _0: 4, _1: 3},
@@ -9763,18 +9802,18 @@ var _user$project$Music$triadIndex = function (mask) {
 };
 var _user$project$Music$triadOptions = function (scale) {
 	var makeTriad = F2(
-		function (note, _p1) {
-			var _p2 = _p1;
-			var _p3 = _p2._0;
+		function (note, _p2) {
+			var _p3 = _p2;
+			var _p4 = _p3._0;
 			return {
 				ctor: '::',
 				_0: note,
 				_1: {
 					ctor: '::',
-					_0: note + _p3,
+					_0: note + _p4,
 					_1: {
 						ctor: '::',
-						_0: (note + _p3) + _p2._1,
+						_0: (note + _p4) + _p3._1,
 						_1: {ctor: '[]'}
 					}
 				}
@@ -9850,25 +9889,25 @@ var _user$project$Music$triadName = function (i) {
 var _user$project$Music$intervalsOptions = function (scale) {
 	return A2(
 		_elm_lang$core$List$map,
-		function (_p4) {
-			var _p5 = _p4;
+		function (_p5) {
+			var _p6 = _p5;
 			return {
 				ctor: '::',
-				_0: _p5._0,
+				_0: _p6._0,
 				_1: {
 					ctor: '::',
-					_0: _p5._1,
+					_0: _p6._1,
 					_1: {ctor: '[]'}
 				}
 			};
 		},
 		A2(
 			_elm_lang$core$List$filter,
-			function (_p6) {
-				var _p7 = _p6;
-				var _p9 = _p7._1;
-				var _p8 = _p7._0;
-				return (_elm_lang$core$Native_Utils.cmp(_p8, _p9) < 0) && (_elm_lang$core$Native_Utils.cmp(_p9 - _p8, 12) < 1);
+			function (_p7) {
+				var _p8 = _p7;
+				var _p10 = _p8._1;
+				var _p9 = _p8._0;
+				return (_elm_lang$core$Native_Utils.cmp(_p9, _p10) < 0) && (_elm_lang$core$Native_Utils.cmp(_p10 - _p9, 12) < 1);
 			},
 			A2(
 				_elm_lang$core$List$concatMap,
@@ -9951,36 +9990,36 @@ var _user$project$Music$intervalName = function (i) {
 		A2(_user$project$Utils$get, i, _user$project$Music$intervalNames));
 };
 var _user$project$Music$chordName = function (c) {
-	var _p10 = c;
-	_v4_3:
+	var _p11 = c;
+	_v5_3:
 	do {
-		if (_p10.ctor === '::') {
-			if (_p10._1.ctor === '[]') {
+		if (_p11.ctor === '::') {
+			if (_p11._1.ctor === '[]') {
 				return 'Unison';
 			} else {
-				if (_p10._1._1.ctor === '[]') {
+				if (_p11._1._1.ctor === '[]') {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						'_',
-						A2(_user$project$Utils$get, _p10._1._0 - _p10._0, _user$project$Music$intervalNames));
+						A2(_user$project$Utils$get, _p11._1._0 - _p11._0, _user$project$Music$intervalNames));
 				} else {
-					if (_p10._1._1._1.ctor === '[]') {
-						var _p11 = _p10._1._0;
+					if (_p11._1._1._1.ctor === '[]') {
+						var _p12 = _p11._1._0;
 						return A2(
 							_elm_lang$core$Maybe$withDefault,
 							'_',
 							A2(
 								_user$project$Utils$get,
 								_user$project$Music$triadIndex(
-									{ctor: '_Tuple2', _0: _p11 - _p10._0, _1: _p10._1._1._0 - _p11}),
+									{ctor: '_Tuple2', _0: _p12 - _p11._0, _1: _p11._1._1._0 - _p12}),
 								_user$project$Music$triadNames));
 					} else {
-						break _v4_3;
+						break _v5_3;
 					}
 				}
 			}
 		} else {
-			break _v4_3;
+			break _v5_3;
 		}
 	} while(false);
 	return '_';
@@ -10138,8 +10177,8 @@ var _user$project$Music$syllable = function (n) {
 			}));
 };
 var _user$project$Music$modeNotes = function (mode) {
-	var _p12 = mode;
-	if (_p12.ctor === 'Major') {
+	var _p13 = mode;
+	if (_p13.ctor === 'Major') {
 		return {
 			ctor: '::',
 			_0: 0,
@@ -10317,8 +10356,8 @@ var _user$project$Music$getSequenceToTonic = F2(
 var _user$project$Music$getRandom = F2(
 	function (mode, chordSize) {
 		var optionsList = function () {
-			var _p13 = chordSize;
-			switch (_p13) {
+			var _p14 = chordSize;
+			switch (_p14) {
 				case 1:
 					return A2(
 						_elm_lang$core$List$map,
@@ -10415,7 +10454,7 @@ var _user$project$Types$questionToString = function (q) {
 		case 'TriadName':
 			return _user$project$Music$triadName(q.answer);
 		default:
-			return _user$project$Music$chordNumber(q.answer);
+			return A2(_user$project$Music$chordNumber, _user$project$Music$Major, q.answer);
 	}
 };
 var _user$project$Types$triadKeyMap = {
@@ -10504,24 +10543,6 @@ var _user$project$Types$gammaKeyMap = {
 		}
 	}
 };
-var _user$project$Types$initStatistics = {total: 0, correct: 0};
-var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: false, autoProceed: false, chordSize: 1, chordsInSequence: 1, delay: 1};
-var _user$project$Types$Settings = F7(
-	function (a, b, c, d, e, f, g) {
-		return {root: a, mode: b, guessChordName: c, autoProceed: d, chordSize: e, chordsInSequence: f, delay: g};
-	});
-var _user$project$Types$Statistics = F2(
-	function (a, b) {
-		return {total: a, correct: b};
-	});
-var _user$project$Types$Question = F2(
-	function (a, b) {
-		return {qType: a, answer: b};
-	});
-var _user$project$Types$AnswerOption = F3(
-	function (a, b, c) {
-		return {name: a, index: b, keyMap: c};
-	});
 var _user$project$Types$getOptions = F2(
 	function (m, t) {
 		var answerOption = F3(
@@ -10561,8 +10582,8 @@ var _user$project$Types$getOptions = F2(
 			default:
 				return A4(
 					_elm_lang$core$List$map3,
-					_user$project$Types$AnswerOption,
-					_user$project$Music$chordNumbers,
+					answerOption,
+					_user$project$Music$chordNumbers(m),
 					A2(_elm_lang$core$List$range, 0, 7),
 					_user$project$Types$triadKeyMap);
 		}
@@ -10581,6 +10602,24 @@ var _user$project$Types$getOptionsFromModel = function (m) {
 				},
 				m.currentQuestion)));
 };
+var _user$project$Types$initStatistics = {total: 0, correct: 0};
+var _user$project$Types$initSettings = {root: 48, mode: _user$project$Music$Major, guessChordName: false, autoProceed: false, chordSize: 1, chordsInSequence: 1, delay: 1};
+var _user$project$Types$Settings = F7(
+	function (a, b, c, d, e, f, g) {
+		return {root: a, mode: b, guessChordName: c, autoProceed: d, chordSize: e, chordsInSequence: f, delay: g};
+	});
+var _user$project$Types$Statistics = F2(
+	function (a, b) {
+		return {total: a, correct: b};
+	});
+var _user$project$Types$Question = F2(
+	function (a, b) {
+		return {qType: a, answer: b};
+	});
+var _user$project$Types$AnswerOption = F3(
+	function (a, b, c) {
+		return {name: a, index: b, keyMap: c};
+	});
 var _user$project$Types$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {stat: a, settings: b, chordsToGuess: c, currentQuestion: d, error: e, guessed: f, attemps: g, page: h};

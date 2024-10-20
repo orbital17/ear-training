@@ -108,7 +108,7 @@ getOptions m t =
                 List.map3 answerOption Music.triadNames (List.range 0 7) triadKeyMap
 
             ChordNumber ->
-                List.map3 AnswerOption Music.chordNumbers (List.range 0 7) triadKeyMap
+                List.map3 answerOption (Music.chordNumbers m) (List.range 0 7) triadKeyMap
 
 
 questionToString : Question -> String
@@ -124,7 +124,7 @@ questionToString q =
             Music.triadName q.answer
 
         ChordNumber ->
-            Music.chordNumber q.answer
+            Music.chordNumber Music.Major q.answer
 
 
 getOptionsFromModel : Model -> List AnswerOption
