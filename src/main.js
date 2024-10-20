@@ -1,23 +1,20 @@
 const ac = new AudioContext();
-let instrument;
 let timerId;
 
-Soundfont.instrument(ac, 'assets/acoustic_grand_piano-ogg.js').then(function(i) {
-    instrument = i;
-});
-
-const chordToNotes = function(chord, time) {
-    return chord.map((note) => ({ time, note }));
-};
+let instrument = new SplendidGrandPiano(ac);
 
 const playChords = function([chords, interval]) {
     if (!instrument) return;
-    const notes = chords.map((c) => chordToNotes(c, 0));
-
+    ac.resume();
     const play = function(i) {
-        if (i >= notes.length) return;
+        if (i >= chords.length) return;
         instrument.stop();
-        instrument.schedule(ac.currentTime, notes[i]);
+        for (let j = 0; j < chords[i].length; j++) {
+            instrument.start({
+                note: chords[i][j],
+                time: ac.currentTime,
+            });
+        }
         timerId = setTimeout(() => play(i + 1), 1000 * interval);
     };
 
