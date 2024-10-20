@@ -213,7 +213,7 @@ chordName c =
 
 chordNumbers : List String
 chordNumbers =
-    [ "I", "ii", "iii", "IV", "V", "vi" ]
+    [ "I", "ii", "iii", "IV", "V", "vi", "viio" ]
 
 
 chordNumber : Int -> String
@@ -251,10 +251,18 @@ getRandom mode chordSize =
             |> Utils.randomFromList
             |> Random.map (Maybe.withDefault [])
 
+chordsSet : Mode -> List Degree
+chordsSet mode = 
+    case mode of
+        Major ->
+            [ 1, 2, 3, 4, 5, 6 ]
+
+        Minor ->
+            [ 1, 3, 4, 5, 6, 7 ]
 
 randomProgression : Mode -> Generator (List Chord)
 randomProgression m =
-    [ 1, 4, 5, 6 ]
+    chordsSet m
         |> Utils.permutations
         |> Utils.randomFromList
         |> Random.map (Maybe.withDefault [])

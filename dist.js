@@ -9623,6 +9623,62 @@ var _user$project$Utils$randomFromList = function (list) {
 		gen);
 };
 
+var _user$project$Music$chordsSet = function (mode) {
+	var _p0 = mode;
+	if (_p0.ctor === 'Major') {
+		return {
+			ctor: '::',
+			_0: 1,
+			_1: {
+				ctor: '::',
+				_0: 2,
+				_1: {
+					ctor: '::',
+					_0: 3,
+					_1: {
+						ctor: '::',
+						_0: 4,
+						_1: {
+							ctor: '::',
+							_0: 5,
+							_1: {
+								ctor: '::',
+								_0: 6,
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		};
+	} else {
+		return {
+			ctor: '::',
+			_0: 1,
+			_1: {
+				ctor: '::',
+				_0: 3,
+				_1: {
+					ctor: '::',
+					_0: 4,
+					_1: {
+						ctor: '::',
+						_0: 5,
+						_1: {
+							ctor: '::',
+							_0: 6,
+							_1: {
+								ctor: '::',
+								_0: 7,
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				}
+			}
+		};
+	}
+};
 var _user$project$Music$chordNumbers = {
 	ctor: '::',
 	_0: 'I',
@@ -9641,7 +9697,11 @@ var _user$project$Music$chordNumbers = {
 					_1: {
 						ctor: '::',
 						_0: 'vi',
-						_1: {ctor: '[]'}
+						_1: {
+							ctor: '::',
+							_0: 'viio',
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -9703,18 +9763,18 @@ var _user$project$Music$triadIndex = function (mask) {
 };
 var _user$project$Music$triadOptions = function (scale) {
 	var makeTriad = F2(
-		function (note, _p0) {
-			var _p1 = _p0;
-			var _p2 = _p1._0;
+		function (note, _p1) {
+			var _p2 = _p1;
+			var _p3 = _p2._0;
 			return {
 				ctor: '::',
 				_0: note,
 				_1: {
 					ctor: '::',
-					_0: note + _p2,
+					_0: note + _p3,
 					_1: {
 						ctor: '::',
-						_0: (note + _p2) + _p1._1,
+						_0: (note + _p3) + _p2._1,
 						_1: {ctor: '[]'}
 					}
 				}
@@ -9790,25 +9850,25 @@ var _user$project$Music$triadName = function (i) {
 var _user$project$Music$intervalsOptions = function (scale) {
 	return A2(
 		_elm_lang$core$List$map,
-		function (_p3) {
-			var _p4 = _p3;
+		function (_p4) {
+			var _p5 = _p4;
 			return {
 				ctor: '::',
-				_0: _p4._0,
+				_0: _p5._0,
 				_1: {
 					ctor: '::',
-					_0: _p4._1,
+					_0: _p5._1,
 					_1: {ctor: '[]'}
 				}
 			};
 		},
 		A2(
 			_elm_lang$core$List$filter,
-			function (_p5) {
-				var _p6 = _p5;
-				var _p8 = _p6._1;
-				var _p7 = _p6._0;
-				return (_elm_lang$core$Native_Utils.cmp(_p7, _p8) < 0) && (_elm_lang$core$Native_Utils.cmp(_p8 - _p7, 12) < 1);
+			function (_p6) {
+				var _p7 = _p6;
+				var _p9 = _p7._1;
+				var _p8 = _p7._0;
+				return (_elm_lang$core$Native_Utils.cmp(_p8, _p9) < 0) && (_elm_lang$core$Native_Utils.cmp(_p9 - _p8, 12) < 1);
 			},
 			A2(
 				_elm_lang$core$List$concatMap,
@@ -9891,36 +9951,36 @@ var _user$project$Music$intervalName = function (i) {
 		A2(_user$project$Utils$get, i, _user$project$Music$intervalNames));
 };
 var _user$project$Music$chordName = function (c) {
-	var _p9 = c;
-	_v3_3:
+	var _p10 = c;
+	_v4_3:
 	do {
-		if (_p9.ctor === '::') {
-			if (_p9._1.ctor === '[]') {
+		if (_p10.ctor === '::') {
+			if (_p10._1.ctor === '[]') {
 				return 'Unison';
 			} else {
-				if (_p9._1._1.ctor === '[]') {
+				if (_p10._1._1.ctor === '[]') {
 					return A2(
 						_elm_lang$core$Maybe$withDefault,
 						'_',
-						A2(_user$project$Utils$get, _p9._1._0 - _p9._0, _user$project$Music$intervalNames));
+						A2(_user$project$Utils$get, _p10._1._0 - _p10._0, _user$project$Music$intervalNames));
 				} else {
-					if (_p9._1._1._1.ctor === '[]') {
-						var _p10 = _p9._1._0;
+					if (_p10._1._1._1.ctor === '[]') {
+						var _p11 = _p10._1._0;
 						return A2(
 							_elm_lang$core$Maybe$withDefault,
 							'_',
 							A2(
 								_user$project$Utils$get,
 								_user$project$Music$triadIndex(
-									{ctor: '_Tuple2', _0: _p10 - _p9._0, _1: _p9._1._1._0 - _p10}),
+									{ctor: '_Tuple2', _0: _p11 - _p10._0, _1: _p10._1._1._0 - _p11}),
 								_user$project$Music$triadNames));
 					} else {
-						break _v3_3;
+						break _v4_3;
 					}
 				}
 			}
 		} else {
-			break _v3_3;
+			break _v4_3;
 		}
 	} while(false);
 	return '_';
@@ -10078,8 +10138,8 @@ var _user$project$Music$syllable = function (n) {
 			}));
 };
 var _user$project$Music$modeNotes = function (mode) {
-	var _p11 = mode;
-	if (_p11.ctor === 'Major') {
+	var _p12 = mode;
+	if (_p12.ctor === 'Major') {
 		return {
 			ctor: '::',
 			_0: 0,
@@ -10213,23 +10273,7 @@ var _user$project$Music$randomProgression = function (m) {
 				{ctor: '[]'}),
 			_user$project$Utils$randomFromList(
 				_user$project$Utils$permutations(
-					{
-						ctor: '::',
-						_0: 1,
-						_1: {
-							ctor: '::',
-							_0: 4,
-							_1: {
-								ctor: '::',
-								_0: 5,
-								_1: {
-									ctor: '::',
-									_0: 6,
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}))));
+					_user$project$Music$chordsSet(m)))));
 };
 var _user$project$Music$getSequenceToTonic = F2(
 	function (mode, chords) {
@@ -10273,8 +10317,8 @@ var _user$project$Music$getSequenceToTonic = F2(
 var _user$project$Music$getRandom = F2(
 	function (mode, chordSize) {
 		var optionsList = function () {
-			var _p12 = chordSize;
-			switch (_p12) {
+			var _p13 = chordSize;
+			switch (_p13) {
 				case 1:
 					return A2(
 						_elm_lang$core$List$map,
@@ -11730,7 +11774,7 @@ var _user$project$Main$getRandomProgression = function (s) {
 		transposeProgression,
 		A2(
 			_elm_lang$core$Random$list,
-			5,
+			4,
 			A2(_elm_lang$core$Random$int, 0, 1)),
 		_user$project$Music$randomProgression(s.mode));
 };

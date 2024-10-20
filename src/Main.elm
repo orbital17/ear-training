@@ -79,7 +79,7 @@ getRandomProgression s =
         transposeProgression octaves progression =
             List.map2 Music.transpose (List.map (\i -> 12 * i) octaves) progression
     in
-        Random.map2 transposeProgression (Random.list 5 (Random.int 0 1)) (Music.randomProgression s.mode)
+        Random.map2 transposeProgression (Random.list 4 (Random.int 0 1)) (Music.randomProgression s.mode)
 
 
 getRandomNoteInChord : Types.Settings -> Random.Generator (List Chord)
