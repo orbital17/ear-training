@@ -6,7 +6,7 @@ import Keyboard
 import Random
 import Set exposing (Set)
 import Music exposing (Chord, Note)
-import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics, Settings)
+import Types exposing (Msg(..), Model, Page(..), allGuessed, initModel, Statistics, initStatistics, Settings)
 import View exposing (view)
 import Storage
 
@@ -193,6 +193,15 @@ update msg model =
 
         MoveToPage page ->
             { model | page = page } ! []
+
+        MoveToMainPage ->
+            { model | 
+                page = MainPage
+                , stat = initStatistics
+                , error = False
+                , guessed = { chords = 0, notes = 0 }
+                , attemps = Set.empty
+            } ! []
 
         StartProgressionExercise ->
             getNewExercise { model | page = ChordProgressionsPage }

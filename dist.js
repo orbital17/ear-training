@@ -10543,6 +10543,7 @@ var _user$project$Types$Model = F8(
 	});
 var _user$project$Types$StartNoteInChordExercise = {ctor: 'StartNoteInChordExercise'};
 var _user$project$Types$StartProgressionExercise = {ctor: 'StartProgressionExercise'};
+var _user$project$Types$MoveToMainPage = {ctor: 'MoveToMainPage'};
 var _user$project$Types$MoveToPage = function (a) {
 	return {ctor: 'MoveToPage', _0: a};
 };
@@ -11255,7 +11256,11 @@ var _user$project$View$actionButtons = function (m) {
 									'',
 									false,
 									false),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: A5(b, _user$project$Types$MoveToMainPage, 'Back', '', false, false),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -11938,6 +11943,19 @@ var _user$project$Main$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						model,
 						{page: _p6._0}),
+					{ctor: '[]'});
+			case 'MoveToMainPage':
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							page: _user$project$Types$MainPage,
+							stat: _user$project$Types$initStatistics,
+							error: false,
+							guessed: {chords: 0, notes: 0},
+							attemps: _elm_lang$core$Set$empty
+						}),
 					{ctor: '[]'});
 			case 'StartProgressionExercise':
 				return _user$project$Main$getNewExercise(

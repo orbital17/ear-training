@@ -55,6 +55,7 @@ actionButtons m =
             )
         , b (NewExercise) "Next" "[spacebar]" (not (allGuessed m)) m.settings.autoProceed
         , b (MoveToPage <| SettingsPage m.page) "Settings" "" False False
+        , b (MoveToMainPage) "Back" "" False False
         ]
 
 

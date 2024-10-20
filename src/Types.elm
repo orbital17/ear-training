@@ -15,6 +15,7 @@ type Msg
     | StartExercises
     | ChangeSettings Settings
     | MoveToPage Page
+    | MoveToMainPage
     | StartProgressionExercise
     | StartNoteInChordExercise
 
